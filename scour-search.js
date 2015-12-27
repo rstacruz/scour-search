@@ -1,4 +1,3 @@
-/* eslint-disable new-cap */
 'use strict'
 
 const normalizeKeypath = require('./utilities/normalize_keypath')
@@ -7,22 +6,33 @@ const toAST = require('./lib/to_ast')
 const assign = require('object-assign')
 const each = require('./utilities/each')
 const get = require('./utilities/get')
-const stringify = JSON.stringify
+const stringify = require('./lib/stringify')
 
 const operands = require('./lib/operands')
-const indexers = {}
-const fallbacks = {}
+const indexers = require('./lib/indexers')
+const fallbacks = require('./lib/fallbacks')
 
-function si (source, options) {
-  if (!(this instanceof si)) return new si(source)
+function Search (source, options) {
+  if (!(this instanceof Search)) return new Search(source)
   if (!options) options = {}
   this.data = source
   this.indices = options.indices || {}
 }
 
-si.prototype = {
+Search.prototype = {
   /**
-   * Creates an index for the field `field`.
+   * Creates an index for the field `field`. This allows searches against this
+   * field to be faster.
+   *
+   *     data = [
+   *       { name: 'John' }, { name: 'Paul' }
+   *     ]
+   *
+   *     search = ss(data)
+   *     search.filter({ name: 'John' }) // ...slow (no index)
+   *
+   *     search = ss(data).index('name')
+   *     search.filter({ name: 'John' }) // ...fast
    */
 
   index (field, type) {
@@ -39,26 +49,35 @@ si.prototype = {
   },
 
   dup (data, options) {
-    return new si(data, {
+    return new Search(data, {
       indices: options.indices || this.indices
     })
   },
 
   /**
-   * Reindex
+   * Given new `newData`, update the indices for `keys`. The parameter `keys`
+   * can be an array, a number, or a string.
+   *
+   * The parameter `newData` *must* be different from `data`, but based off of
+   * it. (scour-search is biased towards immutable workflows.)
    *
    *     data = [ { name: 'john' } ]
-   *     search = si(data).index('name')
+   *     search = ss(data).index('name')
    *
-   *     newData = [ { name: 'ringo' } ]
-   *     search = search.reindex(newData, [0])
+   *     // An addition at key `1`
+   *     newData = [ { name: 'john' }, { name: 'ringo' } ]
+   *     search = search.reindex(newData, 1)
+   *
+   *     // An deletion at key `1`
+   *     newData = [ { name: 'john' } ]
+   *     search = search.reindex(newData, 1)
    */
 
-  reindex (newData, items) {
-    if (!Array.isArray(items)) items = [items]
+  reindex (newData, keys) {
+    if (!Array.isArray(keys)) keys = [keys]
     const indices = assign({}, this.indices)
 
-    each(items, (key) => {
+    each(keys, (key) => {
       each(this.indices, (_, indexKey) => {
         const parts = indexKey.split(':') // TODO support :
         const field = normalizeKeypath(parts[0])
@@ -73,9 +92,7 @@ si.prototype = {
         }
 
         // Insert new ones
-        if (item) {
-          indexers[type](item, key, field, indices[indexKey])
-        }
+        if (item) indexers[type](item, key, field, indices[indexKey])
       })
     })
 
@@ -100,7 +117,11 @@ si.prototype = {
   },
 
   /**
-   * Performs a query.
+   * Performs a query. Supports some MongoDB-style filters.
+   *
+   *     search.filter({ name: 'John' })
+   *     search.filter({ name: { $eq: 'John' } })
+   *     search.filter({ name: { $in: ['John', 'George'] } })
    */
 
   filter (condition) {
@@ -138,28 +159,13 @@ function filter (idx, condition) {
     undefined
 }
 
-indexers['$eq'] = function (item, key, field, index) {
-  const val = stringify(get(item, field))
-  if (!index[val]) index[val] = {}
-  index[val][key] = 1
-}
-
-fallbacks['$eq'] = function (idx, { key, value }) {
-  var results = {}
-  value = stringify(value)
-  each(idx.data, (item, _key) => {
-    if (stringify(get(item, normalizeKeypath(key))) === value) results[_key] = 1
-  })
-  return results
-}
-
 /*
- * export
+ * Exports
  */
 
-si.toAST = toAST
-si.operands = operands
-si.indexers = indexers
-si.fallbacks = fallbacks
+Search.toAST = toAST
+Search.operands = operands
+Search.indexers = indexers
+Search.fallbacks = fallbacks
 
-module.exports = si
+module.exports = Search
