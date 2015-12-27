@@ -1,6 +1,6 @@
 'use strict'
 
-const si = require('../siftindex')
+const si = require('../scour-search')
 
 describe('operands', function () {
   const data = [

@@ -1,13 +1,13 @@
 {
-  "name": "sift-index",
+  "name": "scour-search",
   "version": "1.0.0",
-  "description": "```js data =   { 1: { name: 'Homer' },     2: { name: 'Marge' },     3: { name: 'Bart' } }",
-  "main": "siftindex.node.js",
+  "description": "Fast searching",
+  "main": "scour-search.node.js",
   "scripts": {
     "test": "mocha",
-    "build": "browserify --bare -s siftindex siftindex.js -o siftindex.min.js",
-    "build:node": "browserify --bare --node --no-bundle-external siftindex.js -o siftindex.node.js",
-    "watch": "watchify -v --bare -s siftindex siftindex.js -o siftindex.min.js",
+    "build": "browserify --bare -s scour-search scour-search.js -o scour-search.min.js",
+    "build:node": "browserify --bare --node --no-bundle-external scour-search.js -o scour-search.node.js",
+    "watch": "watchify -v --bare -s scour-search scour-search.js -o scour-search.min.js",
     "prepublish": "npm run build & npm run build:node & wait"
   },
   "browserify": {

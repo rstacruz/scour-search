@@ -1,6 +1,6 @@
 'use strict'
 
-const si = require('../siftindex')
+const si = require('../scour-search')
 
 describe('reindex del', function () {
   var search1, search2

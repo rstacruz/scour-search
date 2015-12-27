@@ -4,7 +4,7 @@ require('babel-core/register')
 
 const bm = require('./bm')
 
-global.si = require('../siftindex.js')
+global.si = require('../scour-search.js')
 global.sift = require('sift')
 
 global.data = [

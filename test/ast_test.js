@@ -1,6 +1,6 @@
 'use strict'
 
-const toAST = require('../siftindex').toAST
+const toAST = require('../scour-search').toAST
 
 describe('ast', function () {
   it('$eq', function () {
