@@ -18,6 +18,8 @@ search.filter({ gender: 'm' })
 //      3: { name: 'Bart', gender: 'm' } }
 ```
 
+[![Status](https://travis-ci.org/rstacruz/scour-search.svg?branch=master)](https://travis-ci.org/rstacruz/scour-search "See test builds")
+
 ## MongoDB-style queries
 
 Supported operations: $or, $and, $not, $in, $nin, $eq, $ne.
