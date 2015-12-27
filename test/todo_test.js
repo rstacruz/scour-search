@@ -1,17 +1,22 @@
 'use strict'
 
 describe('todo', function () {
-  it('$eq', done)
-  it('$not', done)
-  it('$in', done)
-  it('$ne', done)
-  it('$nin', done)
+  it('reindexing (!)')
+  it('ast', done)
 
-  // not indexable
-  it('$exists: true|false')
-  it('$lt, $gt, $lte, $gte')
+  describe('operands', function () {
+    it('$eq', done)
+    it('$not', done)
+    it('$in', done)
+    it('$ne', done)
+    it('$nin', done)
 
-  it('$mod')
+    // not indexable
+    it('$exists: true|false')
+    it('$lt, $gt, $lte, $gte')
+
+    it('$mod')
+  })
 
   describe('boolean', function () {
     it('$and', done)

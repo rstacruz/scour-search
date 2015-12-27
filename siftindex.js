@@ -1,16 +1,17 @@
 'use strict'
 
-const each = require('./utilities/each')
 const cloneWithoutKeys = require('./utilities/clone_without_keys')
-const assign = require('object-assign')
 const normalizeKeypath = require('./utilities/normalize_keypath')
+const assign = require('object-assign')
+const each = require('./utilities/each')
 const get = require('./utilities/get')
+const stringify = JSON.stringify
 
 const operands = {}
 const indexers = {}
 const fallbacks = {}
 
-function si (source) {
+function si (source, options) {
   if (!(this instanceof si)) return new si(source)
   this.data = source
   this.indices = {}
@@ -45,6 +46,7 @@ si.prototype = {
 
   getKeys (field, value, type) {
     const key = '' + field + ':' + (type || '$eq')
+    value = stringify(value)
     if (!this.indices[key]) return
 
     const result = this.indices[key][value]
@@ -115,7 +117,7 @@ function filter (idx, condition) {
 }
 
 indexers['$eq'] = function (item, key, field, index) {
-  const val = get(item, field)
+  const val = stringify(get(item, field))
   if (!index[val]) index[val] = {}
   index[val][key] = 1
 }
@@ -177,8 +179,9 @@ operands['$nin'] = function (idx, { key, value }) {
 
 fallbacks['$eq'] = function (idx, { key, value }) {
   var results = {}
+  value = stringify(value)
   each(idx.data, (item, _key) => {
-    if (get(item, normalizeKeypath(key)) === value) results[_key] = 1
+    if (stringify(get(item, normalizeKeypath(key))) === value) results[_key] = 1
   })
   return results
 }
