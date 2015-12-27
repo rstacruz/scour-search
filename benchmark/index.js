@@ -14,7 +14,7 @@ global.data = [
   { id: 4, name: 'Taylor Swift' }
 ]
 
-for (var i = 0; i < 5; i++) {
+for (var i = 0; i < 7; i++) {
   data = data.concat(data)
 }
 
@@ -39,5 +39,8 @@ bm('searching (n=' + data.length + ')', {
   },
   'via sift': function () {
     sift({ name: 'Miles Davis' }, data)
+  },
+  'native Array.filter()': function () {
+    indexed.filter((item) => item.name === 'Miles Davis')
   }
 })

@@ -44,6 +44,42 @@ search = search.reindex(newData, 4)
 // `4` is the key of the new entry
 ```
 
+## Arrays and objects
+
+scour-search works for both Arrays and array-like Objects. Performance is much faster with Objects (see benchmarks).
+
+```js
+// array
+data = [
+  { symbol: 'AAPL', name: 'Apple' },
+  { symbol: 'MSFT', name: 'Microsoft' },
+  { symbol: 'FB', name: 'Facebook' }
+]
+
+// object
+data = {
+  aapl: { symbol: 'AAPL', name: 'Apple' },
+  msft: { symbol: 'MSFT', name: 'Microsoft' },
+  fb: { symbol: 'FB', name: 'Facebook' }
+}
+```
+
+## Benchmarks
+
+```js
+searching (n=512)
+  indexed, array
+    x 35,895 ops/sec ±3.20% (70 runs sampled)
+  indexed, object
+    x 326,461 ops/sec ±3.48% (76 runs sampled)
+  unindexed, array
+    x 2,600 ops/sec ±2.82% (76 runs sampled)
+  sift.js
+    x 4,728 ops/sec ±3.09% (76 runs sampled)
+  native Array.filter()
+    x 2,247 ops/sec ±3.15% (74 runs sampled)
+```
+
 ## API
 
 <!--api-->
