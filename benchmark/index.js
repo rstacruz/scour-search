@@ -25,14 +25,17 @@ global.indexed = si(data).index('name')
 global.objIndexed = si(objData).index('name')
 
 bm('searching (n=' + data.length + ')', {
-  'with index': function () {
+  'indexed, array': function () {
     indexed.filter({ name: 'Miles Davis' })
   },
-  'with index, object': function () {
+  'indexed, object': function () {
     objIndexed.filter({ name: 'Miles Davis' })
   },
-  'without index': function () {
+  'unindexed, array': function () {
     si(data).filter({ name: 'Miles Davis' })
+  },
+  'unindexed, filterRaw': function () {
+    si(data).filterRaw({ type: '$eq', key: 'name', value: 'Miles Davis' })
   },
   'via sift': function () {
     sift({ name: 'Miles Davis' }, data)

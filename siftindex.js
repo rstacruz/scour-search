@@ -91,10 +91,9 @@ si.prototype = {
 
   getKeys (field, value, type) {
     const key = '' + field + ':' + (type || '$eq')
-    value = stringify(value)
     if (!this.indices[key]) return
 
-    const result = this.indices[key][value]
+    const result = this.indices[key][stringify(value)]
     if (typeof result === 'undefined') return {}
 
     return result
