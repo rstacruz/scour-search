@@ -11,9 +11,8 @@ describe('siftindex', function () {
     { name: 'Durian', rotten: true }
   ]
 
-  it.only('works for single results', function () {
+  it('works for single results', function () {
     const idx = si(data).index('name')
-    console.log(idx.indices)
     expect(idx.getKeys('name', 'Apple')).toEqual({'0': 1})
   })
 
@@ -27,13 +26,15 @@ describe('siftindex', function () {
     expect(idx.getKeys('name', 'derp')).toEqual({})
   })
 
-  it('returns undefined for unindexed fields', function () {
-    const idx = si(data)
-    expect(idx.getKeys('name', 'Durian')).toEqual(undefined)
-  })
-
   it('$eq', function () {
     const idx = si(data).index('name')
+    const result = idx.filter2({ type: '$eq', key: 'name', value: 'Durian' })
+
+    expect(result).toEqual(['3', '4'])
+  })
+
+  it('$eq, unindexed', function () {
+    const idx = si(data)
     const result = idx.filter2({ type: '$eq', key: 'name', value: 'Durian' })
 
     expect(result).toEqual(['3', '4'])

@@ -3,8 +3,10 @@
 const each = require('./utilities/each')
 const cloneWithoutKeys = require('./utilities/clone_without_keys')
 const assign = require('object-assign')
+
 const conditions = {}
 const indexers = {}
+const fallbacks = {}
 
 function si (source) {
   if (!(this instanceof si)) return new si(source)
@@ -56,8 +58,11 @@ si.prototype = {
 
 function filter (idx, condition) {
   var type = condition.type
-  if (!type || !conditions[type]) return
-  return conditions[type](idx, condition)
+  if (!type) return
+
+  return (conditions[type] && conditions[type](idx, condition)) ||
+    (fallbacks[type] && fallbacks[type](idx, condition)) ||
+    undefined
 }
 
 indexers['$eq'] = function (item, key, field, index) {
@@ -119,6 +124,14 @@ conditions['$nin'] = function (idx, { key, value }) {
     type: '$not',
     value: { type: '$in', key, value }
   })
+}
+
+fallbacks['$eq'] = function (idx, { key, value }) {
+  var results = {}
+  each(idx.data, (item, _key) => {
+    if (item[key] === value) results[_key] = 1
+  })
+  return results
 }
 
 module.exports = si
