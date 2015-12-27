@@ -2,9 +2,10 @@
 
 describe('todo', function () {
   it('$eq', done)
-
-  it('$ne, $nin')
-  it('$in')
+  it('$not', done)
+  it('$in', done)
+  it('$ne', done)
+  it('$nin', done)
   it('$all')
 
   it('$exists: true|false')
@@ -16,7 +17,6 @@ describe('todo', function () {
   it('$or')
   it('$nor')
 
-  it('$not')
   it('$size')
 
   it('$type')

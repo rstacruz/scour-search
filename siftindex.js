@@ -1,6 +1,7 @@
 'use strict'
 
 const each = require('./utilities/each')
+const cloneWithoutKeys = require('./utilities/clone_without_keys')
 const assign = require('object-assign')
 const conditions = {}
 
@@ -50,27 +51,27 @@ si.prototype = {
    */
 
   filter2 (condition) {
-    const result = filterCondition(this, condition)
+    const result = filter(this, condition)
     return result && Object.keys(result)
   }
 }
 
-function filterCondition (idx, condition) {
+function filter (idx, condition) {
   var type = condition.type
   if (!type || !conditions[type]) return
   return conditions[type](idx, condition)
 }
 
-conditions['$eq'] = function (idx, condition) {
-  return idx.getKeys(condition.key, condition.value)
+conditions['$eq'] = function (idx, { key, value }) {
+  return idx.getKeys(key, value)
 }
 
-conditions['$or'] = function (idx, condition) {
+conditions['$or'] = function (idx, { value }) {
   var result = {}
 
-  for (var i = 0, len = condition.value.length; i < len; i++) {
-    const subcon = condition.value[i]
-    const keys = filterCondition(idx, subcon)
+  for (var i = 0, len = value.length; i < len; i++) {
+    const subcon = value[i]
+    const keys = filter(idx, subcon)
     if (!keys) return
     assign(result, keys)
   }
@@ -78,11 +79,41 @@ conditions['$or'] = function (idx, condition) {
   return result
 }
 
-conditions['$in'] = function (idx, condition) {
-  return filterCondition(idx, {
+conditions['$and'] = function (idx, { value }) {
+  var result = {}
+
+  for (var i = 0, len = value.length; i < len; i++) {
+    const subcon = value[i]
+    const keys = filter(idx, subcon)
+    if (!keys) return
+    if (i === 0) assign(result, keys)
+    else {
+      each(keys, (_, key) => { delete result[key] })
+    }
+  }
+
+  return result
+}
+
+conditions['$in'] = function (idx, { key, value }) {
+  return filter(idx, {
     type: '$or',
-    value: condition.value.map((value) =>
-      ({ type: '$eq', key: condition.key, value }))
+    value: value.map((subvalue) =>
+      ({ type: '$eq', key, value: subvalue }))
+  })
+}
+
+conditions['$not'] = function (idx, { value }) {
+  const subcon = value
+  const result = filter(idx, subcon)
+
+  return cloneWithoutKeys(idx.data, result)
+}
+
+conditions['$nin'] = function (idx, { key, value }) {
+  return filter(idx, {
+    type: '$not',
+    value: { type: '$in', key, value }
   })
 }
 

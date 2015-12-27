@@ -5,10 +5,10 @@ const si = require('../siftindex')
 describe('siftindex', function () {
   const data = [
     { name: 'Apple' },
-    { name: 'Orange' },
     { name: 'Banana' },
-    { name: 'Grape' },
-    { name: 'Grape' }
+    { name: 'Cashew' },
+    { name: 'Durian', rotten: false },
+    { name: 'Durian', rotten: true }
   ]
 
   it('works for single results', function () {
@@ -18,7 +18,7 @@ describe('siftindex', function () {
 
   it('works for multiple results', function () {
     const idx = si(data).index('name')
-    expect(idx.getKeys('name', 'Grape')).toEqual({'3': 1, '4': 1})
+    expect(idx.getKeys('name', 'Durian')).toEqual({'3': 1, '4': 1})
   })
 
   it('returns {} for empty results', function () {
@@ -28,30 +28,53 @@ describe('siftindex', function () {
 
   it('returns undefined for unindexed fields', function () {
     const idx = si(data)
-    expect(idx.getKeys('name', 'Grape')).toEqual(undefined)
+    expect(idx.getKeys('name', 'Durian')).toEqual(undefined)
   })
 
-  it('filter: $eq', function () {
+  it('$eq', function () {
     const idx = si(data).index('name')
-    const result = idx.filter2({ type: '$eq', key: 'name', value: 'Grape' })
+    const result = idx.filter2({ type: '$eq', key: 'name', value: 'Durian' })
 
     expect(result).toEqual(['3', '4'])
   })
 
-  it('filter: $in', function () {
+  it('$and', function () {
     const idx = si(data).index('name')
-    const result = idx.filter2({ type: '$in', key: 'name', value: ['Grape', 'Banana'] })
+    const result = idx.filter2({ type: '$eq', key: 'name', value: 'Durian' })
+
+    expect(result).toEqual(['3', '4'])
+  })
+
+  it('$not', function () {
+    const idx = si(data).index('name')
+    const result = idx.filter2({ type: '$not',
+      value: { type: '$eq', key: 'name', value: 'Durian' }
+    })
+
+    expect(result).toEqual(['0', '1', '2'])
+  })
+
+  it('$in', function () {
+    const idx = si(data).index('name')
+    const result = idx.filter2({ type: '$in', key: 'name', value: ['Durian', 'Cashew'] })
 
     expect(result).toEqual(['2', '3', '4'])
   })
 
-  it('filter: $or', function () {
+  it('$nin', function () {
+    const idx = si(data).index('name')
+    const result = idx.filter2({ type: '$nin', key: 'name', value: ['Durian', 'Cashew'] })
+
+    expect(result).toEqual(['0', '1'])
+  })
+
+  it('$or', function () {
     const idx = si(data).index('name')
     const result = idx.filter2({
       type: '$or',
       value: [
-        { type: '$eq', key: 'name', value: 'Grape' },
-        { type: '$eq', key: 'name', value: 'Banana' }
+        { type: '$eq', key: 'name', value: 'Durian' },
+        { type: '$eq', key: 'name', value: 'Cashew' }
       ]
     })
 
