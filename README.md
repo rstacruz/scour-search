@@ -3,18 +3,15 @@
 > Indexed searching
 
 ```js
-import ss from 'scour-search'
+import Searcher from 'scour-search'
 
 data =
   { 1: { name: 'Homer', gender: 'm' },
     2: { name: 'Marge', gender: 'f' },
     3: { name: 'Bart', gender: 'm' } }
 
-search = ss(data)
+search = Searcher(data)
   .index('name')
-
-search.filter({ name: 'Homer' })
-// => { 1: { name: 'Homer', gender: 'm' } }
 
 search.filter({ gender: 'm' })
 // => { 1: { name: 'Homer', gender: 'm' },
@@ -23,7 +20,7 @@ search.filter({ gender: 'm' })
 
 ## MongoDB-style queries
 
-Supported operations: $or, $and, $not, $in, $nin, $eq, $ne
+Supported operations: $or, $and, $not, $in, $nin, $eq, $ne.
 
 ```js
 search.filter({ $or: [ {name: 'Homer'}, {gender: 'f'} ] })
@@ -166,10 +163,6 @@ search.filter({ name: { $in: ['John', 'George'] } })
 > `filterKeys(condition)`
 
 Performs a query, and only returns keys.
-
-### toAST
-
-Exports
 <!--api:end-->
 
 ## Thanks

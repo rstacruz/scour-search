@@ -170,6 +170,10 @@ Search.prototype = {
   }
 }
 
+/**
+ * Internal: filters by a given condition (`{ type, key, value }`).
+ */
+
 function filter (idx, condition) {
   var type = condition.type
   if (!type) return
@@ -180,7 +184,7 @@ function filter (idx, condition) {
 }
 
 /*
- * Exports
+ * Internal: Exports
  */
 
 Search.toAST = toAST
