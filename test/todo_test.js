@@ -11,7 +11,6 @@ describe('todo', function () {
     it('$ne', done)
     it('$nin', done)
 
-    // not indexable
     it('$exists: true|false')
     it('$lt, $gt, $lte, $gte')
 

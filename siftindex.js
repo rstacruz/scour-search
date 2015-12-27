@@ -1,6 +1,6 @@
 'use strict'
 
-const cloneWithoutKeys = require('./utilities/clone_without_keys')
+const cloneWithoutKeys = require('./lib/clone_without_keys')
 const normalizeKeypath = require('./utilities/normalize_keypath')
 const assign = require('object-assign')
 const each = require('./utilities/each')
@@ -13,8 +13,9 @@ const fallbacks = {}
 
 function si (source, options) {
   if (!(this instanceof si)) return new si(source)
+  if (!options) options = {}
   this.data = source
-  this.indices = {}
+  this.indices = options.indices || {}
 }
 
 si.operands = operands
@@ -53,6 +54,21 @@ si.prototype = {
     if (typeof result === 'undefined') return {}
 
     return result
+  },
+
+  /**
+   * Performs a query.
+   */
+
+  filter (condition) {
+    var keys = this.filterKeys(condition)
+    if (Array.isArray(this.data)) {
+      return Object.keys(keys).map((key) => this.data[key])
+    } else {
+      var result = {}
+      keys.forEach((key) => { result[key] = this.data[key] })
+      return result
+    }
   },
 
   /**

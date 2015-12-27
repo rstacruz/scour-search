@@ -8,6 +8,11 @@ describe('ast', function () {
       .toEqual({ type: '$eq', key: 'name', value: 'hello' })
   })
 
+  it('$eq', function () {
+    expect(toAST('hello'))
+      .toEqual({ type: '$eq', key: undefined, value: 'hello' })
+  })
+
   it('inferred $eq', function () {
     expect(toAST({ name: 'hello' }))
       .toEqual({ type: '$eq', key: 'name', value: 'hello' })
