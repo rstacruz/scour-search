@@ -3,6 +3,8 @@
 const each = require('./utilities/each')
 const cloneWithoutKeys = require('./utilities/clone_without_keys')
 const assign = require('object-assign')
+const normalizeKeypath = require('./utilities/normalize_keypath')
+const get = require('./utilities/get')
 
 const conditions = {}
 const indexers = {}
@@ -20,7 +22,8 @@ si.prototype = {
    */
 
   index (field, type) {
-    const indexKey = '' + field + ':' + (type || '$eq')
+    field = normalizeKeypath(field)
+    const indexKey = '' + field.join('.') + ':' + (type || '$eq')
     if (!this.indices[indexKey]) this.indices[indexKey] = {}
 
     each(this.data, (value, key) => {
@@ -66,7 +69,7 @@ function filter (idx, condition) {
 }
 
 indexers['$eq'] = function (item, key, field, index) {
-  const val = item[field]
+  const val = get(item, field)
   if (!index[val]) index[val] = {}
   index[val][key] = 1
 }
@@ -129,7 +132,7 @@ conditions['$nin'] = function (idx, { key, value }) {
 fallbacks['$eq'] = function (idx, { key, value }) {
   var results = {}
   each(idx.data, (item, _key) => {
-    if (item[key] === value) results[_key] = 1
+    if (get(item, normalizeKeypath(key)) === value) results[_key] = 1
   })
   return results
 }
