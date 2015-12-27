@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.siftindex = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 
 /**
@@ -144,7 +144,7 @@ function unary(fn) {
   return fn;
 }
 
-},{"../utilities/each":6,"./clone_without_keys":1,"object-assign":4}],3:[function(require,module,exports){
+},{"../utilities/each":5,"./clone_without_keys":1,"object-assign":undefined}],3:[function(require,module,exports){
 'use strict';
 
 function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
@@ -184,47 +184,6 @@ module.exports = function toAST(condition, prefix) {
 };
 
 },{"./operands":2}],4:[function(require,module,exports){
-/* eslint-disable no-unused-vars */
-'use strict';
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-module.exports = Object.assign || function (target, source) {
-	var from;
-	var to = toObject(target);
-	var symbols;
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
-
-		for (var key in from) {
-			if (hasOwnProperty.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
-
-		if (Object.getOwnPropertySymbols) {
-			symbols = Object.getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
-
-	return to;
-};
-
-},{}],5:[function(require,module,exports){
 /* eslint-disable new-cap */
 'use strict';
 
@@ -395,7 +354,7 @@ si.fallbacks = fallbacks;
 
 module.exports = si;
 
-},{"./lib/clone_without_keys":1,"./lib/operands":2,"./lib/to_ast":3,"./utilities/each":6,"./utilities/get":7,"./utilities/normalize_keypath":8,"object-assign":4}],6:[function(require,module,exports){
+},{"./lib/clone_without_keys":1,"./lib/operands":2,"./lib/to_ast":3,"./utilities/each":5,"./utilities/get":6,"./utilities/normalize_keypath":7,"object-assign":undefined}],5:[function(require,module,exports){
 'use strict';
 
 /**
@@ -430,7 +389,7 @@ each.native = Array.prototype.forEach;
 
 module.exports = each;
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 module.exports = function get(object, keypath) {
@@ -444,7 +403,7 @@ module.exports = function get(object, keypath) {
   return result;
 };
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 /**
@@ -473,5 +432,4 @@ module.exports = function normalizeKeypath(keypath, isArguments) {
   }
 };
 
-},{}]},{},[5])(5)
-});
+},{}]},{},[4]);

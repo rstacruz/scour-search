@@ -66,12 +66,16 @@ si.prototype = {
         const item = newData[key]
 
         // Remove old ones
-        var index = {}
-        indexers[type](this.data[key], key, field, index)
-        indices[indexKey] = cloneWithoutKeys(this.indices[indexKey], index)
+        if (this.data[key]) {
+          var index = {}
+          indexers[type](this.data[key], key, field, index)
+          indices[indexKey] = cloneWithoutKeys(this.indices[indexKey], index)
+        }
 
         // Insert new ones
-        indexers[type](item, key, field, indices[indexKey])
+        if (item) {
+          indexers[type](item, key, field, indices[indexKey])
+        }
       })
     })
 
@@ -79,7 +83,8 @@ si.prototype = {
   },
 
   /**
-   * Returns keys matching a given value. Run it through `Object.keys` later.
+   * Internal: Returns keys matching a given value. Run it through
+   * `Object.keys` later.
    *
    *     getKeys('name', 'John') // => { '4': 1, '5': 1 }
    */

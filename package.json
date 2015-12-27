@@ -2,12 +2,13 @@
   "name": "sift-index",
   "version": "1.0.0",
   "description": "```js data =   { 1: { name: 'Homer' },     2: { name: 'Marge' },     3: { name: 'Bart' } }",
-  "main": "siftindex.js",
+  "main": "siftindex.node.js",
   "scripts": {
     "test": "mocha",
     "build": "browserify --bare -s siftindex siftindex.js -o siftindex.min.js",
+    "build:node": "browserify --bare --node --no-bundle-external siftindex.js -o siftindex.node.js",
     "watch": "watchify -v --bare -s siftindex siftindex.js -o siftindex.min.js",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build & npm run build:node & wait"
   },
   "browserify": {
     "transform": [
