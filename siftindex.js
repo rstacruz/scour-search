@@ -1,13 +1,14 @@
+/* eslint-disable new-cap */
 'use strict'
 
-const cloneWithoutKeys = require('./lib/clone_without_keys')
 const normalizeKeypath = require('./utilities/normalize_keypath')
+const toAST = require('./lib/to_ast')
 const assign = require('object-assign')
 const each = require('./utilities/each')
 const get = require('./utilities/get')
 const stringify = JSON.stringify
 
-const operands = {}
+const operands = require('./lib/operands')
 const indexers = {}
 const fallbacks = {}
 
@@ -17,10 +18,6 @@ function si (source, options) {
   this.data = source
   this.indices = options.indices || {}
 }
-
-si.operands = operands
-si.indexers = indexers
-si.fallbacks = fallbacks
 
 si.prototype = {
   /**
@@ -89,46 +86,12 @@ si.prototype = {
   }
 }
 
-si.toAST = toAST
-
-/*
- * { name: 'john' }
- * { name: { $eq: 'john' } }
- */
-
-function toAST (condition, prefix) {
-  if (typeof condition !== 'object') {
-    return { type: '$eq', key: prefix, value: condition }
-  }
-
-  var keys = Object.keys(condition)
-  var result = {}
-
-  if (keys.length === 1) {
-    var operand = operands[keys[0]]
-    let value = condition[keys[0]]
-
-    if (operand && operand.unary) {
-      return { type: keys[0], key: prefix, value: toAST(value, prefix) }
-    } else if (operand) {
-      return { type: keys[0], key: prefix, value: condition[keys[0]] }
-    }
-  }
-
-  var conditions = keys.map((key) =>
-    toAST(condition[key], prefix ? `${prefix}.${key}` : key))
-
-  return conditions.length === 1
-    ? conditions[0]
-    : { type: '$and', value: conditions }
-}
-
 function filter (idx, condition) {
   var type = condition.type
   if (!type) return
 
-  return (operands[type] && operands[type](idx, condition)) ||
-    (fallbacks[type] && fallbacks[type](idx, condition)) ||
+  return (operands[type] && operands[type](idx, condition, filter)) ||
+    (fallbacks[type] && fallbacks[type](idx, condition, filter)) ||
     undefined
 }
 
@@ -136,61 +99,6 @@ indexers['$eq'] = function (item, key, field, index) {
   const val = stringify(get(item, field))
   if (!index[val]) index[val] = {}
   index[val][key] = 1
-}
-
-operands['$eq'] = function (idx, { key, value }) {
-  return idx.getKeys(key, value)
-}
-
-operands['$or'] = unary(function (idx, { value }) {
-  var result = {}
-
-  for (var i = 0, len = value.length; i < len; i++) {
-    const subcon = value[i]
-    const keys = filter(idx, subcon)
-    if (!keys) return
-    assign(result, keys)
-  }
-
-  return result
-})
-
-operands['$and'] = unary(function (idx, { value }) {
-  var result = {}
-
-  for (var i = 0, len = value.length; i < len; i++) {
-    const subcon = value[i]
-    const keys = filter(idx, subcon)
-    if (!keys) return
-    if (i === 0) assign(result, keys)
-    else {
-      each(result, (_, key) => { if (!keys[key]) delete result[key] })
-    }
-  }
-
-  return result
-})
-
-operands['$in'] = function (idx, { key, value }) {
-  return filter(idx, {
-    type: '$or',
-    value: value.map((subvalue) =>
-      ({ type: '$eq', key, value: subvalue }))
-  })
-}
-
-operands['$not'] = unary(function (idx, { value }) {
-  const subcon = value
-  const result = filter(idx, subcon)
-
-  return cloneWithoutKeys(idx.data, result)
-})
-
-operands['$nin'] = function (idx, { key, value }) {
-  return filter(idx, {
-    type: '$not',
-    value: { type: '$in', key, value }
-  })
 }
 
 fallbacks['$eq'] = function (idx, { key, value }) {
@@ -202,9 +110,13 @@ fallbacks['$eq'] = function (idx, { key, value }) {
   return results
 }
 
-function unary (fn) {
-  fn.unary = true
-  return fn
-}
+/*
+ * export
+ */
+
+si.toAST = toAST
+si.operands = operands
+si.indexers = indexers
+si.fallbacks = fallbacks
 
 module.exports = si

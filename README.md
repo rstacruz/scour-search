@@ -5,8 +5,8 @@ data =
     3: { name: 'Bart' } }
 
 si(data)
-  .update(data)
   .index('name')
+  .index('name', '$eq')
   .reindex()  // update all indices
   .reindex(3) // update index by id
   .reindex([3, 4, 5])
@@ -21,7 +21,12 @@ si(data)
   ] })
 ```
 
-Numeric:
+Restrict:
+
+```js
+si(data)
+  .index('name')
+```
 
 ```js
 
