@@ -2,7 +2,7 @@
 
 const si = require('../siftindex')
 
-describe.only('reindex', function () {
+describe('reindex', function () {
   var search1, search2
 
   const data = [
@@ -28,7 +28,6 @@ describe.only('reindex', function () {
   })
 
   it('updates search2', function () {
-    console.log(search2.indices)
     expect(search2.filterKeys({ name: 'Ringo' })).toEqual([ '2' ])
     expect(search2.filterKeys({ name: 'George' })).toEqual([ ])
   })

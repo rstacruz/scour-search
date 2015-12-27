@@ -102,7 +102,7 @@ si.prototype = {
   filter (condition) {
     var keys = this.filterKeys(condition)
     if (Array.isArray(this.data)) {
-      return Object.keys(keys).map((key) => this.data[key])
+      return keys.map((key) => this.data[key])
     } else {
       var result = {}
       keys.forEach((key) => { result[key] = this.data[key] })
