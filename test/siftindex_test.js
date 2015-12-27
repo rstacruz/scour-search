@@ -39,10 +39,15 @@ describe('siftindex', function () {
   })
 
   it('$and', function () {
-    const idx = si(data).index('name')
-    const result = idx.filter2({ type: '$eq', key: 'name', value: 'Durian' })
+    const idx = si(data).index('name').index('rotten')
+    const result = idx.filter2({
+      type: '$and', value: [
+        { type: '$eq', key: 'name', value: 'Durian' },
+        { type: '$eq', key: 'rotten', value: true },
+      ]
+    })
 
-    expect(result).toEqual(['3', '4'])
+    expect(result).toEqual(['3'])
   })
 
   it('$not', function () {
