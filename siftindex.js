@@ -2,6 +2,7 @@
 'use strict'
 
 const normalizeKeypath = require('./utilities/normalize_keypath')
+const cloneWithoutKeys = require('./lib/clone_without_keys')
 const toAST = require('./lib/to_ast')
 const assign = require('object-assign')
 const each = require('./utilities/each')
@@ -27,13 +28,54 @@ si.prototype = {
   index (field, type) {
     field = normalizeKeypath(field)
     const indexKey = '' + field.join('.') + ':' + (type || '$eq')
-    if (!this.indices[indexKey]) this.indices[indexKey] = {}
 
+    var index = {}
     each(this.data, (value, key) => {
-      indexers['$eq'](value, key, field, this.indices[indexKey])
+      indexers['$eq'](value, key, field, index, 1)
     })
 
+    this.indices[indexKey] = index
     return this
+  },
+
+  dup (data, options) {
+    return new si(data, {
+      indices: options.indices || this.indices
+    })
+  },
+
+  /**
+   * Reindex
+   *
+   *     data = [ { name: 'john' } ]
+   *     search = si(data).index('name')
+   *
+   *     newData = [ { name: 'ringo' } ]
+   *     search = search.reindex(newData, [0])
+   */
+
+  reindex (newData, items) {
+    if (!Array.isArray(items)) items = [items]
+    const indices = assign({}, this.indices)
+
+    each(items, (key) => {
+      each(this.indices, (_, indexKey) => {
+        const parts = indexKey.split(':') // TODO support :
+        const field = normalizeKeypath(parts[0])
+        const type = parts[1]
+        const item = newData[key]
+
+        // Remove old ones
+        var index = {}
+        indexers[type](this.data[key], key, field, index)
+        indices[indexKey] = cloneWithoutKeys(this.indices[indexKey], index)
+
+        // Insert new ones
+        indexers[type](item, key, field, indices[indexKey])
+      })
+    })
+
+    return this.dup(newData, { indices })
   },
 
   /**
