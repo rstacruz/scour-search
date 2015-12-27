@@ -18,15 +18,15 @@ describe('keypaths', function () {
 
   it('works for indexed', function () {
     const idx = si(data).index('fruit.name')
-    const result = idx.filterAST({ type: '$eq', key: 'fruit.name', value: 'Durian' })
+    const result = idx.filterRaw({ type: '$eq', key: 'fruit.name', value: 'Durian' })
 
-    expect(result).toEqual(['3', '4'])
+    expect(Object.keys(result)).toEqual(['3', '4'])
   })
 
   it('works for unindexed', function () {
     const idx = si(data)
-    const result = idx.filterAST({ type: '$eq', key: 'fruit.name', value: 'Durian' })
+    const result = idx.filterRaw({ type: '$eq', key: 'fruit.name', value: 'Durian' })
 
-    expect(result).toEqual(['3', '4'])
+    expect(Object.keys(result)).toEqual(['3', '4'])
   })
 })

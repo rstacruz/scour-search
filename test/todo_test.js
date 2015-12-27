@@ -1,8 +1,12 @@
 'use strict'
 
 describe('todo', function () {
-  it('reindexing (!)')
+  it('reindexing (!)', done)
   it('ast', done)
+  it('reindexing by deleting keypath')
+  it('reindexing by similar keypath')
+  // ...if you index `user.name` but `user` was changed
+  it('restricting')
 
   describe('operands', function () {
     it('$eq', done)
@@ -10,11 +14,6 @@ describe('todo', function () {
     it('$in', done)
     it('$ne', done)
     it('$nin', done)
-
-    it('$exists: true|false')
-    it('$lt, $gt, $lte, $gte')
-
-    it('$mod')
   })
 
   describe('boolean', function () {
@@ -23,12 +22,17 @@ describe('todo', function () {
     it('$nor')
   })
 
-  it('$size')
-  it('$all')
-  it('$type')
-  it('$regex')
-  it('$where')
-  it('$elemMatch')
+  describe('non-indexable operands', function () {
+    it('$exists: true|false')
+    it('$lt, $gt, $lte, $gte')
+    it('$mod')
+    it('$size')
+    it('$all')
+    it('$type')
+    it('$regex')
+    it('$where')
+    it('$elemMatch')
+  })
 })
 
 function done () {}

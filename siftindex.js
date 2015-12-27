@@ -100,7 +100,9 @@ si.prototype = {
    */
 
   filter (condition) {
-    var keys = this.filterKeys(condition)
+    var keys = this.filterRaw(toAST(condition))
+    keys = Object.keys(keys)
+
     if (Array.isArray(this.data)) {
       return keys.map((key) => this.data[key])
     } else {
@@ -111,20 +113,15 @@ si.prototype = {
   },
 
   /**
-   * Performs a query.
+   * Performs a query, and only returns keys.
    */
 
   filterKeys (condition) {
-    return this.filterAST(toAST(condition))
+    return Object.keys(this.filterRaw(toAST(condition)))
   },
 
-  /**
-   * Performs a query with a given AST.
-   */
-
-  filterAST (condition) {
-    const result = filter(this, condition)
-    return result && Object.keys(result)
+  filterRaw (ast) {
+    return filter(this, ast)
   }
 }
 
