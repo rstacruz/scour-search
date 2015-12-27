@@ -1,24 +1,27 @@
 {
   "name": "scour-search",
-  "version": "1.0.0",
   "description": "Fast searching",
-  "main": "scour-search.node.js",
-  "scripts": {
-    "test": "mocha",
-    "build": "browserify --bare -s scour-search scour-search.js -o scour-search.min.js",
-    "build:node": "browserify --bare --node --no-bundle-external scour-search.js -o scour-search.node.js",
-    "watch": "watchify -v --bare -s scour-search scour-search.js -o scour-search.min.js",
-    "prepublish": "npm run build & npm run build:node & wait"
+  "version": "0.1.0",
+  "author": "Rico Sta. Cruz <rico@ricostacruz.com>",
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
   },
   "browserify": {
     "transform": [
       "babelify"
     ]
   },
-  "author": "Rico Sta. Cruz <rico@ricostacruz.com>",
-  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rstacruz/scour-search/issues"
+  },
+  "dependencies": {
+    "object-assign": "4.0.1"
+  },
   "devDependencies": {
     "babel": "6.3.26",
+    "babel-core": "6.3.26",
     "babel-preset-es2015": "6.3.13",
     "babelify": "7.2.0",
     "benchmark": "1.0.0",
@@ -32,14 +35,21 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {
-    "babel-core": "6.3.26",
-    "expect": "^1.13.4",
-    "object-assign": "4.0.1"
+  "homepage": "https://github.com/rstacruz/scour-search#readme",
+  "keywords": [
+    "search"
+  ],
+  "license": "MIT",
+  "main": "scour-search.node.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rstacruz/scour-search.git"
   },
-  "babel": {
-    "presets": [
-      "es2015"
-    ]
+  "scripts": {
+    "build": "browserify --bare -s scour-search scour-search.js -o scour-search.min.js",
+    "build:node": "browserify --bare --node --no-bundle-external scour-search.js -o scour-search.node.js",
+    "prepublish": "npm run build & npm run build:node & wait",
+    "test": "mocha",
+    "watch": "watchify -v --bare -s scour-search scour-search.js -o scour-search.min.js"
   }
 }
