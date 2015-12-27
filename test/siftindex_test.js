@@ -11,8 +11,9 @@ describe('siftindex', function () {
     { name: 'Durian', rotten: true }
   ]
 
-  it('works for single results', function () {
+  it.only('works for single results', function () {
     const idx = si(data).index('name')
+    console.log(idx.indices)
     expect(idx.getKeys('name', 'Apple')).toEqual({'0': 1})
   })
 

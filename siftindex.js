@@ -4,6 +4,7 @@ const each = require('./utilities/each')
 const cloneWithoutKeys = require('./utilities/clone_without_keys')
 const assign = require('object-assign')
 const conditions = {}
+const indexers = {}
 
 function si (source) {
   if (!(this instanceof si)) return new si(source)
@@ -17,14 +18,11 @@ si.prototype = {
    */
 
   index (field, type) {
-    const key = '' + field + ':' + (type || '$eq')
-    const index = {}
-    this.indices[key] = index
+    const indexKey = '' + field + ':' + (type || '$eq')
+    if (!this.indices[indexKey]) this.indices[indexKey] = {}
 
     each(this.data, (value, key) => {
-      const val = value[field]
-      if (!index[val]) index[val] = {}
-      index[val][key] = 1
+      indexers['$eq'](value, key, field, this.indices[indexKey])
     })
 
     return this
@@ -60,6 +58,12 @@ function filter (idx, condition) {
   var type = condition.type
   if (!type || !conditions[type]) return
   return conditions[type](idx, condition)
+}
+
+indexers['$eq'] = function (item, key, field, index) {
+  const val = item[field]
+  if (!index[val]) index[val] = {}
+  index[val][key] = 1
 }
 
 conditions['$eq'] = function (idx, { key, value }) {

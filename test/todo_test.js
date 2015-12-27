@@ -6,19 +6,21 @@ describe('todo', function () {
   it('$in', done)
   it('$ne', done)
   it('$nin', done)
-  it('$all')
 
+  // not indexable
   it('$exists: true|false')
   it('$lt, $gt, $lte, $gte')
 
   it('$mod')
 
-  it('$and')
-  it('$or')
-  it('$nor')
+  describe('boolean', function () {
+    it('$and', done)
+    it('$or', done)
+    it('$nor')
+  })
 
   it('$size')
-
+  it('$all')
   it('$type')
   it('$regex')
   it('$where')
