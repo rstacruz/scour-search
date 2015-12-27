@@ -6,7 +6,7 @@ const assign = require('object-assign')
 const normalizeKeypath = require('./utilities/normalize_keypath')
 const get = require('./utilities/get')
 
-const conditions = {}
+const operands = {}
 const indexers = {}
 const fallbacks = {}
 
@@ -15,6 +15,10 @@ function si (source) {
   this.data = source
   this.indices = {}
 }
+
+si.operands = operands
+si.indexers = indexers
+si.fallbacks = fallbacks
 
 si.prototype = {
   /**
@@ -53,17 +57,59 @@ si.prototype = {
    * Performs a query.
    */
 
-  filter2 (condition) {
+  filterKeys (condition) {
+    return this.filterAST(toAST(condition))
+  },
+
+  /**
+   * Performs a query with a given AST.
+   */
+
+  filterAST (condition) {
     const result = filter(this, condition)
     return result && Object.keys(result)
   }
+}
+
+si.toAST = toAST
+
+/*
+ * { name: 'john' }
+ * { name: { $eq: 'john' } }
+ */
+
+function toAST (condition, prefix) {
+  if (typeof condition !== 'object') {
+    return { type: '$eq', key: prefix, value: condition }
+  }
+
+  var keys = Object.keys(condition)
+  var result = {}
+
+  if (keys.length === 1) {
+    var operand = operands[keys[0]]
+    let value = condition[keys[0]]
+
+    if (operand && operand.unary) {
+      return { type: keys[0], key: prefix, value: toAST(value, prefix) }
+    } else if (operand) {
+      return { type: keys[0], key: prefix, value: condition[keys[0]] }
+    }
+  }
+
+  var conditions = keys.map((key) =>
+    toAST(condition[key], prefix ? `${prefix}.${key}` : key))
+
+  return conditions.length === 1
+    ? conditions[0]
+    : { type: '$and', value: conditions }
 }
 
 function filter (idx, condition) {
   var type = condition.type
   if (!type) return
 
-  return (conditions[type] && conditions[type](idx, condition)) ||
+  return (operands[type] && operands[type](idx, condition)) ||
     (fallbacks[type] && fallbacks[type](idx, condition)) ||
     undefined
 }
@@ -74,11 +120,11 @@ indexers['$eq'] = function (item, key, field, index) {
   index[val][key] = 1
 }
 
-conditions['$eq'] = function (idx, { key, value }) {
+operands['$eq'] = function (idx, { key, value }) {
   return idx.getKeys(key, value)
 }
 
-conditions['$or'] = function (idx, { value }) {
+operands['$or'] = unary(function (idx, { value }) {
   var result = {}
 
   for (var i = 0, len = value.length; i < len; i++) {
@@ -89,9 +135,9 @@ conditions['$or'] = function (idx, { value }) {
   }
 
   return result
-}
+})
 
-conditions['$and'] = function (idx, { value }) {
+operands['$and'] = unary(function (idx, { value }) {
   var result = {}
 
   for (var i = 0, len = value.length; i < len; i++) {
@@ -100,14 +146,14 @@ conditions['$and'] = function (idx, { value }) {
     if (!keys) return
     if (i === 0) assign(result, keys)
     else {
-      each(keys, (_, key) => { delete result[key] })
+      each(result, (_, key) => { if (!keys[key]) delete result[key] })
     }
   }
 
   return result
-}
+})
 
-conditions['$in'] = function (idx, { key, value }) {
+operands['$in'] = function (idx, { key, value }) {
   return filter(idx, {
     type: '$or',
     value: value.map((subvalue) =>
@@ -115,14 +161,14 @@ conditions['$in'] = function (idx, { key, value }) {
   })
 }
 
-conditions['$not'] = function (idx, { value }) {
+operands['$not'] = unary(function (idx, { value }) {
   const subcon = value
   const result = filter(idx, subcon)
 
   return cloneWithoutKeys(idx.data, result)
-}
+})
 
-conditions['$nin'] = function (idx, { key, value }) {
+operands['$nin'] = function (idx, { key, value }) {
   return filter(idx, {
     type: '$not',
     value: { type: '$in', key, value }
@@ -135,6 +181,11 @@ fallbacks['$eq'] = function (idx, { key, value }) {
     if (get(item, normalizeKeypath(key)) === value) results[_key] = 1
   })
   return results
+}
+
+function unary (fn) {
+  fn.unary = true
+  return fn
 }
 
 module.exports = si

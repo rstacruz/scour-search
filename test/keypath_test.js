@@ -13,20 +13,19 @@ describe('keypaths', function () {
 
   it('works for single results', function () {
     const idx = si(data).index('fruit.name')
-    console.log(idx.indices)
     expect(idx.getKeys('fruit.name', 'Apple')).toEqual({'0': 1})
   })
 
   it('works for indexed', function () {
     const idx = si(data).index('fruit.name')
-    const result = idx.filter2({ type: '$eq', key: 'fruit.name', value: 'Durian' })
+    const result = idx.filterAST({ type: '$eq', key: 'fruit.name', value: 'Durian' })
 
     expect(result).toEqual(['3', '4'])
   })
 
   it('works for unindexed', function () {
     const idx = si(data)
-    const result = idx.filter2({ type: '$eq', key: 'fruit.name', value: 'Durian' })
+    const result = idx.filterAST({ type: '$eq', key: 'fruit.name', value: 'Durian' })
 
     expect(result).toEqual(['3', '4'])
   })
