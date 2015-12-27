@@ -12,6 +12,22 @@ const operands = require('./lib/operands')
 const indexers = require('./lib/indexers')
 const fallbacks = require('./lib/fallbacks')
 
+/**
+ * Searcher : Searcher(data)
+ * (Class) Creates a searcher object where you can search given data.
+ *
+ *     import Searcher from 'scour-search'
+ *
+ *     data = [ { symbol: 'AAPL' }, { symbol: 'MSFT' } ]
+ *
+ *     search = Searcher(data)
+ *     search.filter({ symbol: 'AAPL' })
+ *
+ *     // Add indexing via .index()
+ *     search = search.index('symbol')
+ *     search.filter({ symbol: 'AAPL' })
+ */
+
 function Search (source, options) {
   if (!(this instanceof Search)) return new Search(source)
   if (!options) options = {}
@@ -24,14 +40,16 @@ Search.prototype = {
    * Creates an index for the field `field`. This allows searches against this
    * field to be faster.
    *
+   * This function is mutative; it will modify the current Searcher instance.
+   *
    *     data = [
    *       { name: 'John' }, { name: 'Paul' }
    *     ]
    *
-   *     search = ss(data)
+   *     search = Searcher(data)
    *     search.filter({ name: 'John' }) // ...slow (no index)
    *
-   *     search = ss(data).index('name')
+   *     search = Searcher(data).index('name')
    *     search.filter({ name: 'John' }) // ...fast
    */
 
@@ -62,7 +80,7 @@ Search.prototype = {
    * it. (scour-search is biased towards immutable workflows.)
    *
    *     data = [ { name: 'john' } ]
-   *     search = ss(data).index('name')
+   *     search = Searcher(data).index('name')
    *
    *     // An addition at key `1`
    *     newData = [ { name: 'john' }, { name: 'ringo' } ]
@@ -118,6 +136,8 @@ Search.prototype = {
 
   /**
    * Performs a query. Supports some MongoDB-style filters.
+   *
+   *     search = Searcher(data)
    *
    *     search.filter({ name: 'John' })
    *     search.filter({ name: { $eq: 'John' } })

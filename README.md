@@ -43,3 +43,107 @@ newData = { ...data, 4: { name: 'John' } }
 search = search.reindex(newData, 4)
 // `4` is the key of the new entry
 ```
+
+## API
+
+<!--api-->
+
+## Searcher
+
+> `Searcher(data)`
+
+Creates a searcher object where you can search given data.
+
+```js
+import Searcher from 'scour-search'
+
+data = [ { symbol: 'AAPL' }, { symbol: 'MSFT' } ]
+
+search = Searcher(data)
+search.filter({ symbol: 'AAPL' })
+
+// Add indexing via .index()
+search = search.index('symbol')
+search.filter({ symbol: 'AAPL' })
+```
+
+### index
+
+> `index(field, type)`
+
+Creates an index for the field `field`. This allows searches against this
+field to be faster.
+
+This function is mutative; it will modify the current Searcher instance.
+
+```js
+data = [
+  { name: 'John' }, { name: 'Paul' }
+]
+
+search = Searcher(data)
+search.filter({ name: 'John' }) // ...slow (no index)
+
+search = Searcher(data).index('name')
+search.filter({ name: 'John' }) // ...fast
+```
+
+### reindex
+
+> `reindex(newData, keys)`
+
+Given new `newData`, update the indices for `keys`. The parameter `keys`
+can be an array, a number, or a string.
+
+The parameter `newData` *must* be different from `data`, but based off of
+it. (scour-search is biased towards immutable workflows.)
+
+```js
+data = [ { name: 'john' } ]
+search = Searcher(data).index('name')
+
+// An addition at key `1`
+newData = [ { name: 'john' }, { name: 'ringo' } ]
+search = search.reindex(newData, 1)
+
+// An deletion at key `1`
+newData = [ { name: 'john' } ]
+search = search.reindex(newData, 1)
+```
+
+### filter
+
+> `filter(condition)`
+
+Performs a query. Supports some MongoDB-style filters.
+
+```js
+search = Searcher(data)
+
+search.filter({ name: 'John' })
+search.filter({ name: { $eq: 'John' } })
+search.filter({ name: { $in: ['John', 'George'] } })
+```
+
+### filterKeys
+
+> `filterKeys(condition)`
+
+Performs a query, and only returns keys.
+
+### toAST
+
+Exports
+<!--api:end-->
+
+## Thanks
+
+**scour-search** © 2015+, Rico Sta. Cruz. Released under the [MIT] License.<br>
+Authored and maintained by Rico Sta. Cruz with help from contributors ([list][contributors]).
+
+> [ricostacruz.com](http://ricostacruz.com) &nbsp;&middot;&nbsp;
+> GitHub [@rstacruz](https://github.com/rstacruz) &nbsp;&middot;&nbsp;
+> Twitter [@rstacruz](https://twitter.com/rstacruz)
+
+[MIT]: http://mit-license.org/
+[contributors]: http://github.com/rstacruz/scour-search/contributors
