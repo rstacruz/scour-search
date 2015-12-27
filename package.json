@@ -1,0 +1,22 @@
+{
+  "name": "sift-index",
+  "version": "1.0.0",
+  "description": "```js data =   { 1: { name: 'Homer' },     2: { name: 'Marge' },     3: { name: 'Bart' } }",
+  "main": "siftindex.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Rico Sta. Cruz <rico@ricostacruz.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "expect": "1.13.4",
+    "mocha": "2.3.4"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "expect": "^1.13.4",
+    "object-assign": "4.0.1"
+  }
+}
