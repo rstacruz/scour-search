@@ -19,7 +19,7 @@ describe('todo', function () {
   describe('boolean', function () {
     it('$and', done)
     it('$or', done)
-    it('$nor')
+    it('$nor', done)
   })
 
   describe('non-indexable operands', function () {
@@ -27,10 +27,10 @@ describe('todo', function () {
     it('$lt, $gt, $lte, $gte', done)
     it('$mod', done)
     it('$size', done)
-    it('$all')
-    it('$type')
     it('$regex', done)
     it('$where', done)
+    it('$all')
+    it('$type')
     it('$elemMatch')
   })
 })

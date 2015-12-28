@@ -47,6 +47,11 @@ describe('filter (unindexed)', function () {
      .toEqual([ data[0], data[1] ])
   })
 
+  it('$nor', function () {
+    expect(idx.filter({ $nor: [ { name: 'Apple' }, { name: 'Banana' } ] }))
+     .toEqual([ data[2], data[3], data[4] ])
+  })
+
   it('$in', function () {
     expect(idx.filter({ name: { $in: [ 'Apple', 'Banana' ] } }))
      .toEqual([ data[0], data[1] ])
