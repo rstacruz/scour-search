@@ -89,5 +89,15 @@ describe('filter (unindexed)', function () {
     it('$mod', function () {
       expect(si(data).filter({ $mod: [20, 0] })).toEqual([ 20, 40 ])
     })
+
+    it('$where', function () {
+      expect(si(data).filter({ $where: (v, k) => v === 20 && k === 1 }))
+        .toEqual([ 20 ])
+    })
+  })
+
+  it('$size', function () {
+    const data = [ [0], [0, 0] ]
+    expect(si(data).filter({ $size: 1 })).toEqual([ [0] ])
   })
 })

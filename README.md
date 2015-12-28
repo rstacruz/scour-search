@@ -22,7 +22,9 @@ search.filter({ gender: 'm' })
 
 ## MongoDB-style queries
 
-Supported operations: $or, $and, $not, $in, $nin, $eq, $ne.
+Supported operations (fast): $or, $and, $not, $in, $nin, $eq, $ne.
+
+Supported operations (slow): $lt, $gt, $gte, $lte, $exists, $regex, $where, $size, $mod.
 
 ```js
 search.filter({ $or: [ {name: 'Homer'}, {gender: 'f'} ] })
