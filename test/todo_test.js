@@ -12,6 +12,7 @@ describe('todo', function () {
     it('restricting')
     it('index multiple')
     it('indexOf')
+    it('count')
   })
 
   describe('operands', function () {
