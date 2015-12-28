@@ -319,9 +319,20 @@ function unary(fn) {
 }
 
 },{"../utilities/each":8,"./clone_without_keys":1,"object-assign":undefined}],5:[function(require,module,exports){
-"use strict";
+'use strict';
 
-// Used to stringify values for index keys
+function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+
+/**
+ * Internal: stringify values for index keys. Used to prevent collisions with,
+ * say, `'true'` and `true`.
+ */
+
+module.exports = function (object) {
+  if (typeof object === 'string') return '_' + object;
+  if ((typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object') return JSON.stringify(object);
+  return '' + object;
+};
 module.exports = JSON.stringify;
 
 },{}],6:[function(require,module,exports){
@@ -333,10 +344,16 @@ var operands = require('./operands');
 var fallbacks = require('./fallbacks');
 
 /*
- * Converts a MongoDB-style query to an AST.
+ * Converts a MongoDB-style query to an AST (abstract syntax tree) that's
+ * faster to search with.
  *
  *     toAST({ name: 'john' })
  *     { type: '$eq', key: 'name', value: 'john' }
+ *
+ *     toAST({ name: { $in: [ 'john', 'joe' ] })
+ *     { type: '$or', value:
+ *       [ { type: '$eq', key: 'name', value: 'john' },
+ *         { type: '$eq', key: 'name', value: 'john' } ] }
  */
 
 module.exports = function toAST(condition, prefix) {

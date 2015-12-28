@@ -69,11 +69,11 @@ data = {
 
 ```js
 searching (n=512)
-      x 40596 op/sec  - indexed, array
-      x 360458 op/sec - indexed, object
-      x 20398 op/sec  - unindexed, array
-      x 5797 op/sec   - via sift
-      x 40354 op/sec  - native Array.filter()
+    x 44221 op/sec - indexed, array
+    x 405108 op/sec - indexed, object
+    x 21761 op/sec - unindexed, array
+    x 6104 op/sec - via sift.js
+    x 37525 op/sec - native Array.filter()
 ```
 
 ## API
@@ -138,7 +138,7 @@ search = Searcher(data).index('name')
 newData = [ { name: 'john' }, { name: 'ringo' } ]
 search = search.reindex(newData, 1)
 
-// An deletion at key `1`
+// A deletion at key `1`
 newData = [ { name: 'john' } ]
 search = search.reindex(newData, 1)
 ```

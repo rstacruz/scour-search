@@ -34,7 +34,7 @@ bm('searching (n=' + data.length + ')', {
   'unindexed, array': function () {
     si(data).filter({ name: 'Miles Davis' })
   },
-  'via sift': function () {
+  'via sift.js': function () {
     sift({ name: 'Miles Davis' }, data)
   },
   'native Array.filter()': function () {

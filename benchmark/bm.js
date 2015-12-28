@@ -11,7 +11,7 @@ function bm (suitename, options) {
   }
 }
 
-bm.timeout = 1
+bm.timeout = 3
 
 bm.runBenchmark = function runBenchmark (fn) {
   var start = +new Date()
