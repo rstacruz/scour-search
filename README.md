@@ -67,16 +67,11 @@ data = {
 
 ```js
 searching (n=512)
-  indexed, array
-    x 35,895 ops/sec ±3.20% (70 runs sampled)
-  indexed, object
-    x 326,461 ops/sec ±3.48% (76 runs sampled)
-  unindexed, array
-    x 2,600 ops/sec ±2.82% (76 runs sampled)
-  sift.js
-    x 4,728 ops/sec ±3.09% (76 runs sampled)
-  native Array.filter()
-    x 2,247 ops/sec ±3.15% (74 runs sampled)
+      x 40596 op/sec  - indexed, array
+      x 360458 op/sec - indexed, object
+      x 20398 op/sec  - unindexed, array
+      x 5797 op/sec   - via sift
+      x 40354 op/sec  - native Array.filter()
 ```
 
 ## API

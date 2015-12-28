@@ -23,13 +23,13 @@ describe('todo', function () {
   })
 
   describe('non-indexable operands', function () {
-    it('$exists: true|false')
-    it('$lt, $gt, $lte, $gte')
+    it('$exists: true|false', done)
+    it('$lt, $gt, $lte, $gte', done)
     it('$mod')
     it('$size')
     it('$all')
     it('$type')
-    it('$regex')
+    it('$regex', done)
     it('$where')
     it('$elemMatch')
   })

@@ -159,6 +159,10 @@ Search.prototype = {
     }
   },
 
+  /**
+   * Internal: filters using fallbacks.
+   */
+
   filterFallback (ast) {
     var fn = buildFallback(ast)
     if (!fn) return

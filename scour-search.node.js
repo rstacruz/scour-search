@@ -25,16 +25,114 @@ var get = require('../utilities/get');
 
 var fallbacks = {};
 
-fallbacks['$eq'] = function (idx, _ref) {
-  var key = _ref.key;
-  var value = _ref.value;
+fallbacks['$eq'] = binaryOperator(function (a, b) {
+  return a === b;
+});
 
-  var results = {};
-  value = stringify(value);
-  each(idx.data, function (item, _key) {
-    if (stringify(get(item, normalizeKeypath(key))) === value) results[_key] = 1;
+function binaryOperator(fn) {
+  return function (_ref) {
+    var key = _ref.key;
+    var value = _ref.value;
+
+    key = normalizeKeypath(key);
+    return function (item, _key) {
+      return fn(get(item, key), value);
+    };
+  };
+}
+
+fallbacks['$ne'] = function (_ref2) {
+  var key = _ref2.key;
+  var value = _ref2.value;
+
+  key = normalizeKeypath(key);
+  return function (item, _key) {
+    return get(item, key) !== value;
+  };
+};
+
+fallbacks['$or'] = function (_ref3, build) {
+  var key = _ref3.key;
+  var value = _ref3.value;
+
+  var fns = value.map(build);
+
+  return function (item, key) {
+    for (var i = 0, len = fns.length; i < len; i++) {
+      if (fns[i](item, key)) return true;
+    }
+    return false;
+  };
+};
+
+fallbacks['$and'] = function (_ref4, build) {
+  var key = _ref4.key;
+  var value = _ref4.value;
+
+  var fns = value.map(build);
+
+  return function (item, key) {
+    for (var i = 0, len = fns.length; i < len; i++) {
+      if (!fns[i](item, key)) return false;
+    }
+    return true;
+  };
+};
+
+fallbacks['$in'] = function (_ref5, build) {
+  var key = _ref5.key;
+  var value = _ref5.value;
+
+  return build({
+    type: '$or',
+    value: value.map(function (value) {
+      return { type: '$eq', key: key, value: value };
+    })
   });
-  return results;
+};
+
+fallbacks['$not'] = function (_ref6, build) {
+  var key = _ref6.key;
+  var value = _ref6.value;
+
+  var fn = build(value);
+  return function (item, _key) {
+    return !fn(item, _key);
+  };
+};
+
+fallbacks['$nin'] = function (_ref7, build) {
+  var key = _ref7.key;
+  var value = _ref7.value;
+
+  return build({
+    type: '$and',
+    value: value.map(function (value) {
+      return { type: '$ne', key: key, value: value };
+    })
+  });
+};
+
+fallbacks['$regex'] = function (_ref8) {
+  var key = _ref8.key;
+  var value = _ref8.value;
+
+  key = normalizeKeypath(key);
+  return function (item, _key) {
+    return value.test(get(item, key));
+  };
+};
+
+fallbacks['$exists'] = function (_ref9) {
+  var key = _ref9.key;
+  var value = _ref9.value;
+
+  key = normalizeKeypath(key);
+  if (value) return function (item, _key) {
+    return get(item, key) != null;
+  };else return function (item, _key) {
+    return get(item, key) == null;
+  };
 };
 
 module.exports = fallbacks;
@@ -163,7 +261,7 @@ operands['$not'] = unary(function (idx, _ref6, filter) {
   var subcon = value;
   var result = filter(idx, subcon);
 
-  return cloneWithoutKeys(idx.data, result);
+  if (result) return cloneWithoutKeys(idx.data, result);
 });
 
 operands['$nin'] = function (idx, _ref7, filter) {
@@ -195,6 +293,7 @@ module.exports = JSON.stringify;
 function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
 var operands = require('./operands');
+var fallbacks = require('./fallbacks');
 
 /*
  * Converts a MongoDB-style query to an AST.
@@ -207,11 +306,16 @@ module.exports = function toAST(condition, prefix) {
   if ((typeof condition === 'undefined' ? 'undefined' : _typeof(condition)) !== 'object') {
     return { type: '$eq', key: prefix, value: condition };
   }
+  if (Array.isArray(condition)) {
+    return condition.map(function (condition) {
+      return toAST(condition, prefix);
+    });
+  }
 
   var keys = Object.keys(condition);
 
   if (keys.length === 1) {
-    var operand = operands[keys[0]];
+    var operand = operands[keys[0]] || fallbacks[keys[0]];
     var value = condition[keys[0]];
 
     if (operand && operand.unary) {
@@ -228,8 +332,10 @@ module.exports = function toAST(condition, prefix) {
   return conditions.length === 1 ? conditions[0] : { type: '$and', value: conditions };
 };
 
-},{"./operands":4}],7:[function(require,module,exports){
+},{"./fallbacks":2,"./operands":4}],7:[function(require,module,exports){
 'use strict';
+
+function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
 var normalizeKeypath = require('./utilities/normalize_keypath');
 var cloneWithoutKeys = require('./lib/clone_without_keys');
@@ -379,7 +485,9 @@ Search.prototype = {
   filter: function filter(condition) {
     var _this2 = this;
 
-    var keys = this.filterRaw(toAST(condition));
+    var ast = toAST(condition);
+    var keys = this.filterRaw(ast);
+    if (!keys) return this.filterFallback(ast);
     keys = Object.keys(keys);
 
     if (Array.isArray(this.data)) {
@@ -396,15 +504,78 @@ Search.prototype = {
   },
 
   /**
+   * Internal: filters using fallbacks.
+   */
+
+  filterFallback: function filterFallback(ast) {
+    var _this3 = this;
+
+    var fn = buildFallback(ast);
+    if (!fn) return;
+
+    if (Array.isArray(this.data)) {
+      var _ret = (function () {
+        var result = [];
+        each(_this3.data, function (item, key) {
+          if (fn(item, key)) result.push(item);
+        });
+        return {
+          v: result
+        };
+      })();
+
+      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+    } else {
+      var _ret2 = (function () {
+        var result = {};
+        each(_this3.data, function (item, key) {
+          if (fn(item, key)) result[key] = item;
+        });
+        return {
+          v: result
+        };
+      })();
+
+      if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+    }
+  },
+
+  /**
    * Performs a query, and only returns keys.
    */
 
   filterKeys: function filterKeys(condition) {
-    return Object.keys(this.filterRaw(toAST(condition)));
+    var ast = toAST(condition);
+    var result = this.filterRaw(ast);
+    if (result) return Object.keys(result);
+
+    var fn = buildFallback(ast);
+    if (!fn) return;
+
+    result = [];
+    each(this.data, function (item, key) {
+      if (fn(item, key)) result.push('' + key);
+    });
+    return result;
   },
   filterRaw: function filterRaw(ast) {
-    return filter(this, ast);
+    var result = filter(this, ast);
+    if (typeof result !== 'undefined') return result;
+  },
+  filterRawFallback: function filterRawFallback(ast) {
+    var results = {};
+    var fn = buildFallback(ast);
+    if (!fn) return;
+
+    each(this.data, function (item, key) {
+      if (fn(item, key)) results[key] = 1;
+    });
+    return results;
   }
+};
+
+Search.build = function (condition) {
+  return buildFallback(toAST(condition));
 };
 
 /**
@@ -413,9 +584,17 @@ Search.prototype = {
 
 function filter(idx, condition) {
   var type = condition.type;
-  if (!type) return;
+  if (!type || !operands[type]) return;
 
-  return operands[type] && operands[type](idx, condition, filter) || fallbacks[type] && fallbacks[type](idx, condition, filter) || undefined;
+  return operands[type](idx, condition, filter);
+}
+
+function buildFallback(condition) {
+  var type = condition.type;
+  if (!type || !fallbacks[type]) return;
+
+  var fn = fallbacks[type](condition, buildFallback);
+  return fn;
 }
 
 /*

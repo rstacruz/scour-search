@@ -4,10 +4,10 @@
 
 const bm = require('./bm')
 
-global.si = require('../scour-search.min.js')
-global.sift = require('sift')
+const si = require('../scour-search.min.js')
+const sift = require('sift')
 
-global.data = [
+let data = [
   { id: 1, name: 'Ella Fitzgerald' },
   { id: 2, name: 'Frank Sinatra' },
   { id: 3, name: 'Miles Davis' },
@@ -18,11 +18,11 @@ for (var i = 0; i < 7; i++) {
   data = data.concat(data)
 }
 
-global.objData = {}
+const objData = {}
 data.forEach((val, key) => { data[key] = val })
 
-global.indexed = si(data).index('name')
-global.objIndexed = si(objData).index('name')
+const indexed = si(data).index('name')
+const objIndexed = si(objData).index('name')
 
 bm('searching (n=' + data.length + ')', {
   'indexed, array': function () {
@@ -33,9 +33,6 @@ bm('searching (n=' + data.length + ')', {
   },
   'unindexed, array': function () {
     si(data).filter({ name: 'Miles Davis' })
-  },
-  'unindexed, filterRaw': function () {
-    si(data).filterRaw({ type: '$eq', key: 'name', value: 'Miles Davis' })
   },
   'via sift': function () {
     sift({ name: 'Miles Davis' }, data)
