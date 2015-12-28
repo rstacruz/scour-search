@@ -1,4 +1,13 @@
-## v0.1.0
+## [v0.2.0]
+> Dec 28, 2015
+
+- Implement more matchers.
+- Optimizations.
+
+## [v0.1.0]
 > Dec 28, 2015
 
 - Initial release. Consider me incomplete.
+
+[v0.1.0]: https://github.com/rstacruz/scour-search/tree/v0.1.0
+[v0.2.0]: https://github.com/rstacruz/scour-search/compare/v0.1.0...v0.2.0
