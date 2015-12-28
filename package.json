@@ -47,7 +47,7 @@
   },
   "scripts": {
     "build": "browserify --bare -s scour-search scour-search.js -o scour-search.min.js",
-    "build:node": "browserify --bare --node --no-bundle-external scour-search.js -o scour-search.node.js",
+    "build:node": "browserify --bare -s scour-search --node --no-bundle-external scour-search.js -o scour-search.node.js",
     "prepublish": "npm run build & npm run build:node & wait",
     "test": "mocha",
     "watch": "watchify -v --bare -s scour-search scour-search.js -o scour-search.min.js"

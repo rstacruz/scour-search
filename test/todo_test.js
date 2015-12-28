@@ -11,6 +11,7 @@ describe('todo', function () {
     // ...if you index `user.name` but `user` was changed
     it('restricting')
     it('index multiple')
+    it('indexOf')
   })
 
   describe('operands', function () {
