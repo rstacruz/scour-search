@@ -37,4 +37,16 @@ describe('ast', function () {
         value: { type: '$eq', key: 'name', value: 'hello' }
       })
   })
+
+  it('unary $or', function () {
+    expect(toAST({ $or: [ { name: 'hello' }, { name: 'hi' } ] }))
+      .toEqual({
+        type: '$or',
+        key: undefined,
+        value: [
+          { type: '$eq', key: 'name', value: 'hello' },
+          { type: '$eq', key: 'name', value: 'hi' }
+        ]
+      })
+  })
 })

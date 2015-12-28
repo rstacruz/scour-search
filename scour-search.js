@@ -146,6 +146,7 @@ Search.prototype = {
 
   filter (condition) {
     var keys = this.filterRaw(toAST(condition))
+    if (!keys) throw new Error('cant filter ' + JSON.stringify(condition))
     keys = Object.keys(keys)
 
     if (Array.isArray(this.data)) {
@@ -199,7 +200,8 @@ function buildFallback (condition) {
   var type = condition.type
   if (!type || !fallbacks[type]) return
 
-  return fallbacks[type](condition, buildFallback)
+  var fn = fallbacks[type](condition, buildFallback)
+  return fn
 }
 
 /*
