@@ -3,10 +3,15 @@
 describe('todo', function () {
   it('reindexing (!)', done)
   it('ast', done)
-  it('reindexing by deleting keypath')
-  it('reindexing by similar keypath')
-  // ...if you index `user.name` but `user` was changed
-  it('restricting')
+
+  describe('scour-ready', function () {
+    it('sane fallbacks', done)
+    it('reindexing by deleting keypath')
+    it('reindexing by similar keypath')
+    // ...if you index `user.name` but `user` was changed
+    it('restricting')
+    it('index multiple')
+  })
 
   describe('operands', function () {
     it('$eq', done)
