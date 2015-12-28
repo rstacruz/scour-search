@@ -145,8 +145,9 @@ Search.prototype = {
    */
 
   filter (condition) {
-    var keys = this.filterRaw(toAST(condition))
-    if (!keys) throw new Error('cant filter ' + JSON.stringify(condition))
+    var ast = toAST(condition)
+    var keys = this.filterRaw(ast)
+    if (!keys) return this.filterFallback(ast)
     keys = Object.keys(keys)
 
     if (Array.isArray(this.data)) {
@@ -158,18 +159,44 @@ Search.prototype = {
     }
   },
 
+  filterFallback (ast) {
+    var fn = buildFallback(ast)
+    if (!fn) return
+
+    if (Array.isArray(this.data)) {
+      let result = []
+      each(this.data, (item, key) => { if (fn(item, key)) result.push(item) })
+      return result
+    } else {
+      let result = {}
+      each(this.data, (item, key) => { if (fn(item, key)) result[key] = item })
+      return result
+    }
+  },
+
   /**
    * Performs a query, and only returns keys.
    */
 
   filterKeys (condition) {
-    return Object.keys(this.filterRaw(toAST(condition)))
+    var ast = toAST(condition)
+    var result = this.filterRaw(ast)
+    if (result) return Object.keys(result)
+
+    var fn = buildFallback(ast)
+    if (!fn) return
+
+    result = []
+    each(this.data, (item, key) => { if (fn(item, key)) result.push('' + key) })
+    return result
   },
 
   filterRaw (ast) {
     var result = filter(this, ast)
     if (typeof result !== 'undefined') return result
+  },
 
+  filterRawFallback (ast) {
     var results = {}
     var fn = buildFallback(ast)
     if (!fn) return

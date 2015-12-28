@@ -18,13 +18,6 @@ describe('operands', function () {
     expect(Object.keys(result)).toEqual(['3', '4'])
   })
 
-  it('$eq, unindexed', function () {
-    const idx = si(data)
-    const result = idx.filterRaw({ type: '$eq', key: 'name', value: 'Durian' })
-
-    expect(Object.keys(result)).toEqual(['3', '4'])
-  })
-
   it('$and', function () {
     const idx = si(data).index('name').index('rotten')
     const result = idx.filterRaw({

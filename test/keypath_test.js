@@ -25,8 +25,9 @@ describe('keypaths', function () {
 
   it('works for unindexed', function () {
     const idx = si(data)
-    const result = idx.filterRaw({ type: '$eq', key: 'fruit.name', value: 'Durian' })
+    const result = idx.filterFallback(
+      { type: '$eq', key: 'fruit.name', value: 'Durian' })
 
-    expect(Object.keys(result)).toEqual(['3', '4'])
+    expect(result).toEqual([ data[3], data[4] ])
   })
 })
