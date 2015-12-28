@@ -166,8 +166,22 @@ Search.prototype = {
   },
 
   filterRaw (ast) {
-    return filter(this, ast)
+    var result = filter(this, ast)
+    if (typeof result !== 'undefined') return result
+
+    var results = {}
+    var fn = buildFallback(ast)
+    if (!fn) return
+
+    each(this.data, (item, key) => {
+      if (fn(item, key)) results[key] = 1
+    })
+    return results
   }
+}
+
+Search.build = function (condition) {
+  return buildFallback(toAST(condition))
 }
 
 /**
@@ -176,11 +190,16 @@ Search.prototype = {
 
 function filter (idx, condition) {
   var type = condition.type
-  if (!type) return
+  if (!type || !operands[type]) return
 
-  return (operands[type] && operands[type](idx, condition, filter)) ||
-    (fallbacks[type] && fallbacks[type](idx, condition, filter)) ||
-    undefined
+  return operands[type](idx, condition, filter)
+}
+
+function buildFallback (condition) {
+  var type = condition.type
+  if (!type || !fallbacks[type]) return
+
+  return fallbacks[type](condition, buildFallback)
 }
 
 /*

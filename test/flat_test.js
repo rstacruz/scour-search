@@ -5,7 +5,7 @@ const si = require('../scour-search')
 describe('objects', function () {
   const data = [ 'apple', 'banana' ]
 
-  it('works', function () {
+  it('unindexed works', function () {
     expect(si(data).filter({ $eq: 'apple' })).toEqual(['apple'])
   })
 
