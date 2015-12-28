@@ -1,10 +1,10 @@
 /* eslint-disable new-cap, no-new */
 'use strict'
-require('babel-core/register')
+// require('babel-core/register')
 
 const bm = require('./bm')
 
-global.si = require('../scour-search.js')
+global.si = require('../scour-search.min.js')
 global.sift = require('sift')
 
 global.data = [
