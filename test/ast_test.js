@@ -1,52 +1,47 @@
 'use strict'
 
-const toAST = require('../scour-search').toAST
+const test = require('tape')
+const toAST = require('../src').toAST
 
-describe('ast', function () {
-  it('$eq', function () {
-    expect(toAST({ name: { $eq: 'hello' } }))
-      .toEqual({ type: '$eq', key: 'name', value: 'hello' })
-  })
+test('ast', (t) => {
+  t.deepEqual(
+    toAST({ name: { $eq: 'hello' } }),
+    { type: '$eq', key: 'name', value: 'hello' },
+    '$eq')
 
-  it('$eq', function () {
-    expect(toAST('hello'))
-      .toEqual({ type: '$eq', key: undefined, value: 'hello' })
-  })
+  t.deepEqual(
+    toAST('hello'),
+    { type: '$eq', key: undefined, value: 'hello' },
+    'string')
 
-  it('inferred $eq', function () {
-    expect(toAST({ name: 'hello' }))
-      .toEqual({ type: '$eq', key: 'name', value: 'hello' })
-  })
+  t.deepEqual(
+    toAST({ name: 'hello' }),
+    { type: '$eq', key: 'name', value: 'hello' },
+    '$eq, inferred')
 
-  it('inferred $and', function () {
-    expect(toAST({ name: 'hello', id: 1 }))
-      .toEqual({
-        type: '$and',
-        value: [
-          { type: '$eq', key: 'name', value: 'hello' },
-          { type: '$eq', key: 'id', value: 1 }
-        ]
-      })
-  })
+  t.deepEqual(
+    toAST({ name: 'hello', id: 1 }),
+    { type: '$and',
+      value:
+        [ { type: '$eq', key: 'name', value: 'hello' },
+          { type: '$eq', key: 'id', value: 1 } ] },
+    '$and inferred')
 
-  it('unary $not', function () {
-    expect(toAST({ $not: { name: 'hello' } }))
-      .toEqual({
-        type: '$not',
-        key: undefined,
-        value: { type: '$eq', key: 'name', value: 'hello' }
-      })
-  })
+  t.deepEqual(
+    toAST({ $not: { name: 'hello' } }),
+    { type: '$not',
+      key: undefined,
+      value: { type: '$eq', key: 'name', value: 'hello' } },
+    'unary $not')
 
-  it('unary $or', function () {
-    expect(toAST({ $or: [ { name: 'hello' }, { name: 'hi' } ] }))
-      .toEqual({
-        type: '$or',
-        key: undefined,
-        value: [
-          { type: '$eq', key: 'name', value: 'hello' },
-          { type: '$eq', key: 'name', value: 'hi' }
-        ]
-      })
-  })
+  t.deepEqual(
+    toAST({ $or: [ { name: 'hello' }, { name: 'hi' } ] }),
+    { type: '$or',
+      key: undefined,
+      value:
+        [ { type: '$eq', key: 'name', value: 'hello' },
+          { type: '$eq', key: 'name', value: 'hi' } ] },
+    'unary $or')
+
+  t.end()
 })

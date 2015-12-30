@@ -1,3 +1,5 @@
+'use strict'
+
 const operands = require('./operands')
 const fallbacks = require('./fallbacks')
 

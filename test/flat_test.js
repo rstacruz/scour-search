@@ -1,15 +1,12 @@
 'use strict'
 
-const si = require('../scour-search')
+const test = require('tape')
+const si = require('../src')
 
-describe('objects', function () {
+test('flat', (t) => {
   const data = [ 'apple', 'banana' ]
 
-  it('unindexed works', function () {
-    expect(si(data).filter({ $eq: 'apple' })).toEqual(['apple'])
-  })
-
-  it('works without $eq', function () {
-    expect(si(data).filter('apple')).toEqual(['apple'])
-  })
+  t.deepEqual(si(data).filter({ $eq: 'apple' }), ['apple'])
+  t.deepEqual(si(data).filter('apple'), ['apple'])
+  t.end()
 })

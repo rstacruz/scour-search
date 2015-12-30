@@ -1,80 +1,52 @@
 'use strict'
 
-const si = require('../scour-search')
+const test = require('tape')
+const si = require('../src')
+const keys = Object.keys
+var result
 
-describe('operands', function () {
-  const data = [
-    { name: 'Apple' },
+const data =
+  [ { name: 'Apple' },
     { name: 'Banana' },
     { name: 'Cashew' },
     { name: 'Durian', rotten: false },
-    { name: 'Durian', rotten: true }
-  ]
+    { name: 'Durian', rotten: true } ]
 
-  it('$eq', function () {
-    const idx = si(data).index('name')
-    const result = idx.filterRaw({ type: '$eq', key: 'name', value: 'Durian' })
+test('operands', (t) => {
+  const idx = si(data).index('name').index('rotten')
 
-    expect(Object.keys(result)).toEqual(['3', '4'])
-  })
+  result = idx.filterRaw({ type: '$eq', key: 'name', value: 'Durian' })
+  t.deepEqual(keys(result), ['3', '4'], '$eq')
 
-  it('$and', function () {
-    const idx = si(data).index('name').index('rotten')
-    const result = idx.filterRaw({
-      type: '$and', value: [
-        { type: '$eq', key: 'name', value: 'Durian' },
-        { type: '$eq', key: 'rotten', value: true },
-      ]
-    })
+  result = idx.filterRaw(
+    { type: '$and', value:
+      [ { type: '$eq', key: 'name', value: 'Durian' },
+        { type: '$eq', key: 'rotten', value: true } ] })
+  t.deepEqual(keys(result), ['4'], '$and')
 
-    expect(Object.keys(result)).toEqual(['4'])
-  })
+  result = idx.filterRaw(
+    { type: '$nor', value:
+      [ { type: '$eq', key: 'name', value: 'Durian' },
+        { type: '$eq', key: 'name', value: 'Cashew' } ] })
+  t.deepEqual(keys(result), [ '0', '1' ], '$nor')
 
-  it('$nor', function () {
-    const idx = si(data).index('name').index('rotten')
-    const result = idx.filterRaw({
-      type: '$nor', value: [
-        { type: '$eq', key: 'name', value: 'Durian' },
-        { type: '$eq', key: 'name', value: 'Cashew' },
-      ]
-    })
+  result = idx.filterRaw(
+    { type: '$not',
+    value: { type: '$eq', key: 'name', value: 'Durian' } })
+  t.deepEqual(keys(result), ['0', '1', '2'], '$not')
 
-    expect(Object.keys(result)).toEqual([ '0', '1' ])
-  })
+  result = idx.filterRaw({ type: '$in', key: 'name', value: ['Durian', 'Cashew'] })
+  t.deepEqual(keys(result), ['2', '3', '4'], '$in')
 
-  it('$not', function () {
-    const idx = si(data).index('name')
-    const result = idx.filterRaw({ type: '$not',
-      value: { type: '$eq', key: 'name', value: 'Durian' }
-    })
+  result = idx.filterRaw({ type: '$nin', key: 'name', value: ['Durian', 'Cashew'] })
+  t.deepEqual(keys(result), ['0', '1'], '$nin')
 
-    expect(Object.keys(result)).toEqual(['0', '1', '2'])
-  })
+  result = idx.filterRaw(
+    { type: '$or',
+      value:
+      [ { type: '$eq', key: 'name', value: 'Durian' },
+        { type: '$eq', key: 'name', value: 'Cashew' } ] })
+  t.deepEqual(keys(result), ['2', '3', '4'], '$or')
 
-  it('$in', function () {
-    const idx = si(data).index('name')
-    const result = idx.filterRaw({ type: '$in', key: 'name', value: ['Durian', 'Cashew'] })
-
-    expect(Object.keys(result)).toEqual(['2', '3', '4'])
-  })
-
-  it('$nin', function () {
-    const idx = si(data).index('name')
-    const result = idx.filterRaw({ type: '$nin', key: 'name', value: ['Durian', 'Cashew'] })
-
-    expect(Object.keys(result)).toEqual(['0', '1'])
-  })
-
-  it('$or', function () {
-    const idx = si(data).index('name')
-    const result = idx.filterRaw({
-      type: '$or',
-      value: [
-        { type: '$eq', key: 'name', value: 'Durian' },
-        { type: '$eq', key: 'name', value: 'Cashew' }
-      ]
-    })
-
-    expect(Object.keys(result)).toEqual(['2', '3', '4'])
-  })
+  t.end()
 })

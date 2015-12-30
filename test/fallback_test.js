@@ -1,108 +1,98 @@
 'use strict'
 
-const si = require('../scour-search')
+const test = require('tape')
+const si = require('../src')
+var data, idx
 
-describe('filter (unindexed)', function () {
-  const data = [
-    { name: 'Apple' },
-    { name: 'Banana' },
-    { name: 'Cashew' },
-    { name: 'Durian', rotten: 'no' },
-    { name: 'Durian', rotten: 'yes' }
-  ]
+test('.filter() unindexed', (t) => {
+  data =
+    [ { name: 'Apple' },
+      { name: 'Banana' },
+      { name: 'Cashew' },
+      { name: 'Durian', rotten: 'no' },
+      { name: 'Durian', rotten: 'yes' } ]
 
-  const idx = si(data) // .index('name')
+  idx = si(data) // .index('name')
 
-  it('$eq', function () {
-    expect(idx.filter({ name: 'Apple' })).toEqual([ data[0] ])
-  })
+  t.deepEqual(
+    idx.filter({ name: 'Apple' }),
+    [ data[0] ],
+    '$eq (inferred)')
 
-  it('$ne', function () {
-    expect(idx.filter({ name: { $ne: 'Durian' } }))
-      .toEqual([ data[0], data[1], data[2] ])
-  })
+  t.deepEqual(
+    idx.filter({ name: { $ne: 'Durian' } }),
+    [ data[0], data[1], data[2] ],
+    '$ne')
 
-  it('$not $ne', function () {
-    expect(idx.filter({ $not: { name: { $ne: 'Apple' } } }))
-      .toEqual([ data[0] ])
-  })
+  t.deepEqual(
+    idx.filter({ $not: { name: { $ne: 'Apple' } } }),
+    [ data[0] ],
+    '$not $ne')
 
-  it('$nin', function () {
-    expect(idx.filter({ name: { $nin: ['Cashew', 'Durian'] } }))
-      .toEqual([ data[0], data[1] ])
-  })
+  t.deepEqual(
+    idx.filter({ name: { $nin: ['Cashew', 'Durian'] } }),
+    [ data[0], data[1] ],
+    '$nin')
 
-  it('$eq $and', function () {
-    expect(idx.filter({ name: 'Durian', rotten: 'no' }))
-     .toEqual([ data[3] ])
-  })
+  t.deepEqual(
+    idx.filter({ name: 'Durian', rotten: 'no' }),
+    [ data[3] ],
+   '$eq $and')
 
-  it('$eq $and, explicit', function () {
-    expect(idx.filter({ $and: [ { name: 'Durian' }, { rotten: 'no' } ] }))
-     .toEqual([ data[3] ])
-  })
+  t.deepEqual(
+    idx.filter({ $and: [ { name: 'Durian' }, { rotten: 'no' } ] }),
+    [ data[3] ],
+   '$eq $and (explicit)')
 
-  it('$or', function () {
-    expect(idx.filter({ $or: [ { name: 'Apple' }, { name: 'Banana' } ] }))
-     .toEqual([ data[0], data[1] ])
-  })
+  t.deepEqual(
+    idx.filter({ $or: [ { name: 'Apple' }, { name: 'Banana' } ] }),
+    [ data[0], data[1] ],
+   '$or')
 
-  it('$nor', function () {
-    expect(idx.filter({ $nor: [ { name: 'Apple' }, { name: 'Banana' } ] }))
-     .toEqual([ data[2], data[3], data[4] ])
-  })
+  t.deepEqual(
+    idx.filter({ $nor: [ { name: 'Apple' }, { name: 'Banana' } ] }),
+    [ data[2], data[3], data[4] ],
+   '$nor')
 
-  it('$in', function () {
-    expect(idx.filter({ name: { $in: [ 'Apple', 'Banana' ] } }))
-     .toEqual([ data[0], data[1] ])
-  })
+  t.deepEqual(
+    idx.filter({ name: { $in: [ 'Apple', 'Banana' ] } }),
+    [ data[0], data[1] ],
+    '$in')
 
-  it('$exists: true', function () {
-    const data = [ 'a', null, 'b', undefined ]
-    expect(si(data).filter({ $exists: true })).toEqual([ 'a', 'b' ])
-  })
+  data = [ 'a', null, 'b', undefined ]
+  t.deepEqual(
+    si(data).filter({ $exists: true }),
+    [ 'a', 'b' ],
+    '$exists: true')
 
-  it('$exists: false', function () {
-    const data = [ 'a', null, 'b', undefined ]
-    expect(si(data).filter({ $exists: false })).toEqual([ null, undefined ])
-  })
+  data = [ 'a', null, 'b', undefined ]
+  t.deepEqual(
+    si(data).filter({ $exists: false }),
+    [ null, undefined ],
+    '$exists: false')
 
-  it('$regex', function () {
-    const data = [ 'aaa', 'bbb', 'ccc' ]
-    expect(si(data).filter({ $regex: /a/ })).toEqual([ 'aaa' ])
-  })
+  data = [ 'aaa', 'bbb', 'ccc' ]
+  t.deepEqual(
+    si(data).filter({ $regex: /a/ }),
+    [ 'aaa' ],
+    '$regex')
 
-  describe('numeric', function () {
-    const data = [ 10, 20, 30, 40 ]
+  t.deepEqual(
+    si([ [0], [0, 0] ]).filter({ $size: 1 }),
+    [ [0] ],
+    '$size')
 
-    it('$gt', function () {
-      expect(si(data).filter({ $gt: 30 })).toEqual([ 40 ])
-    })
+  t.end()
+})
 
-    it('$gte', function () {
-      expect(si(data).filter({ $gte: 30 })).toEqual([ 30, 40 ])
-    })
+test('.filter() numeric', (t) => {
+  data = [ 10, 20, 30, 40 ]
 
-    it('$lt', function () {
-      expect(si(data).filter({ $lt: 20 })).toEqual([ 10 ])
-    })
-
-    it('$lte', function () {
-      expect(si(data).filter({ $lte: 20 })).toEqual([ 10, 20 ])
-    })
-
-    it('$mod', function () {
-      expect(si(data).filter({ $mod: [20, 0] })).toEqual([ 20, 40 ])
-    })
-
-    it('$where', function () {
-      expect(si(data).filter({ $where: (v, k) => v === 20 && k === 1 }))
-        .toEqual([ 20 ])
-    })
-  })
-
-  it('$size', function () {
-    const data = [ [0], [0, 0] ]
-    expect(si(data).filter({ $size: 1 })).toEqual([ [0] ])
-  })
+  t.deepEqual(si(data).filter({ $gt: 30 }), [ 40 ], '$gt')
+  t.deepEqual(si(data).filter({ $gte: 30 }), [ 30, 40 ], '$gte')
+  t.deepEqual(si(data).filter({ $lt: 20 }), [ 10 ], '$lt')
+  t.deepEqual(si(data).filter({ $lte: 20 }), [ 10, 20 ], '$lte')
+  t.deepEqual(si(data).filter({ $mod: [20, 0] }), [ 20, 40 ], '$mod')
+  t.deepEqual(si(data).filter({ $where: (v, k) => v === 20 && k === 1 }), [20], '$where')
+  t.end()
 })

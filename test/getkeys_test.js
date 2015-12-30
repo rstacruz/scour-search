@@ -1,28 +1,20 @@
 'use strict'
 
-const si = require('../scour-search')
+const test = require('tape')
+const si = require('../src')
 
-describe('getKeys', function () {
-  const data = [
-    { name: 'Apple' },
-    { name: 'Banana' },
-    { name: 'Cashew' },
-    { name: 'Durian', rotten: false },
-    { name: 'Durian', rotten: true }
-  ]
+test('getKeys', (t) => {
+  const data =
+    [ { name: 'Apple' },
+      { name: 'Banana' },
+      { name: 'Cashew' },
+      { name: 'Durian', rotten: false },
+      { name: 'Durian', rotten: true } ]
 
-  it('works for single results', function () {
-    const idx = si(data).index('name')
-    expect(idx.getKeys('name', 'Apple')).toEqual({'0': 1})
-  })
+  const idx = si(data).index('name')
 
-  it('works for multiple results', function () {
-    const idx = si(data).index('name')
-    expect(idx.getKeys('name', 'Durian')).toEqual({'3': 1, '4': 1})
-  })
-
-  it('returns {} for empty results', function () {
-    const idx = si(data).index('name')
-    expect(idx.getKeys('name', 'derp')).toEqual({})
-  })
+  t.deepEqual(idx.getKeys('name', 'Apple'), {'0': 1}, 'single result')
+  t.deepEqual(idx.getKeys('name', 'Durian'), {'3': 1, '4': 1}, 'multiple results')
+  t.deepEqual(idx.getKeys('name', 'derp'), {}, 'empty result')
+  t.end()
 })

@@ -1,38 +1,32 @@
 'use strict'
 
-const si = require('../scour-search')
+const test = require('tape')
+const si = require('../src')
 
-describe('objects', function () {
-  const data = {
-    a: { name: 'Apple' },
+const data =
+  { a: { name: 'Apple' },
     b: { name: 'Banana' },
     c: { name: 'Cashew' },
     d: { name: 'Durian', rotten: 'no' },
-    d2: { name: 'Durian', rotten: 'yes' }
-  }
+    d2: { name: 'Durian', rotten: 'yes' } }
 
-  describe('filterKeys', function () {
-    it('works for single results', function () {
-      const idx = si(data).index('name')
-      expect(idx.filterKeys({ name: 'Apple' })).toEqual(['a'])
-    })
+var idx
 
-    it('works for and', function () {
-      const idx = si(data).index('name').index('rotten')
-      expect(idx.filterKeys({ name: 'Durian', rotten: 'yes' })).toEqual(['d2'])
-    })
+test('.filterKeys() objects', (t) => {
+  idx = si(data).index('name')
+  t.deepEqual(idx.filterKeys({ name: 'Apple' }), ['a'], 'single result')
 
-    it('works for and (2)', function () {
-      const idx = si(data).index('name')
-      expect(idx.filterKeys({ name: 'Durian', rotten: 'no' })).toEqual(['d'])
-    })
-  })
+  idx = si(data).index('name').index('rotten')
+  t.deepEqual(idx.filterKeys({ name: 'Durian', rotten: 'yes' }), ['d2'], 'and')
 
-  describe('filter', function () {
-    it('works', function () {
-      const idx = si(data).index('name')
-      expect(idx.filter({ name: 'Apple' }))
-        .toEqual({ a: { name: 'Apple' } })
-    })
-  })
+  idx = si(data).index('name')
+  t.deepEqual(idx.filterKeys({ name: 'Durian', rotten: 'no' }), ['d'], 'and')
+  t.end()
+})
+
+test('.filter() objects', (t) => {
+  t.deepEqual(
+    si(data).index('name').filter({ name: 'Apple' }),
+    { a: { name: 'Apple' } })
+  t.end()
 })

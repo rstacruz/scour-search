@@ -1,16 +1,16 @@
 'use strict'
 
-const normalizeKeypath = require('./utilities/normalize_keypath')
-const cloneWithoutKeys = require('./lib/clone_without_keys')
-const toAST = require('./lib/to_ast')
+const normalizeKeypath = require('../utilities/normalize_keypath')
+const cloneWithoutKeys = require('./clone_without_keys')
+const toAST = require('./to_ast')
 const assign = require('object-assign')
-const each = require('./utilities/each')
-const get = require('./utilities/get')
-const stringify = require('./lib/stringify')
+const each = require('../utilities/each')
+const get = require('../utilities/get')
+const stringify = require('./stringify')
 
-const operands = require('./lib/operands')
-const indexers = require('./lib/indexers')
-const fallbacks = require('./lib/fallbacks')
+const operands = require('./operands')
+const indexers = require('./indexers')
+const fallbacks = require('./fallbacks')
 
 /**
  * Searcher : Searcher(data)

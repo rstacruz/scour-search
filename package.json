@@ -8,11 +8,6 @@
       "es2015"
     ]
   },
-  "browserify": {
-    "transform": [
-      "babelify"
-    ]
-  },
   "bugs": {
     "url": "https://github.com/rstacruz/scour-search/issues"
   },
@@ -27,8 +22,9 @@
     "browserify": "12.0.1",
     "expect": "1.13.4",
     "mdx": "0.3.1",
-    "mocha": "2.3.4",
     "sift": "3.0.0",
+    "tap-spec": "4.1.1",
+    "tape": "4.4.0",
     "watchify": "3.6.1"
   },
   "directories": {
@@ -39,7 +35,7 @@
     "search"
   ],
   "license": "MIT",
-  "main": "lib/scour-search.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rstacruz/scour-search.git"
@@ -48,6 +44,6 @@
     "build": "babel src --out-dir lib",
     "watch": "babel -w src --out-dir lib",
     "prepublish": "npm run build",
-    "test": "mocha"
+    "test": "babel-node test | tap-spec"
   }
 }

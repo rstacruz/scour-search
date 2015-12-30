@@ -1,33 +1,26 @@
 'use strict'
 
-const si = require('../scour-search')
+const test = require('tape')
+const si = require('../src')
+var idx, result
 
-describe('keypaths', function () {
-  const data = [
-    { fruit: { name: 'Apple' } },
-    { fruit: { name: 'Banana' } },
-    { fruit: { name: 'Cashew' } },
-    { fruit: { name: 'Durian', rotten: false } },
-    { fruit: { name: 'Durian', rotten: true } }
-  ]
+test('keypaths', (t) => {
+  const data =
+    [ { fruit: { name: 'Apple' } },
+      { fruit: { name: 'Banana' } },
+      { fruit: { name: 'Cashew' } },
+      { fruit: { name: 'Durian', rotten: false } },
+      { fruit: { name: 'Durian', rotten: true } } ]
 
-  it('works for single results', function () {
-    const idx = si(data).index('fruit.name')
-    expect(idx.getKeys('fruit.name', 'Apple')).toEqual({'0': 1})
-  })
+  idx = si(data).index('fruit.name')
+  t.deepEqual(idx.getKeys('fruit.name', 'Apple'), {'0': 1})
 
-  it('works for indexed', function () {
-    const idx = si(data).index('fruit.name')
-    const result = idx.filterRaw({ type: '$eq', key: 'fruit.name', value: 'Durian' })
+  idx = si(data).index('fruit.name')
+  result = idx.filterRaw({ type: '$eq', key: 'fruit.name', value: 'Durian' })
+  t.deepEqual(Object.keys(result), ['3', '4'], 'indexed')
 
-    expect(Object.keys(result)).toEqual(['3', '4'])
-  })
-
-  it('works for unindexed', function () {
-    const idx = si(data)
-    const result = idx.filterFallback(
-      { type: '$eq', key: 'fruit.name', value: 'Durian' })
-
-    expect(result).toEqual([ data[3], data[4] ])
-  })
+  result = si(data).filterFallback(
+    { type: '$eq', key: 'fruit.name', value: 'Durian' })
+  t.deepEqual(result, [ data[3], data[4] ], 'unndexed')
+  t.end()
 })

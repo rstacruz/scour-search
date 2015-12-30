@@ -1,10 +1,9 @@
 'use strict'
 
-const si = require('../scour-search')
+const test = require('tape')
+const si = require('../src')
 
-describe('reindex add', function () {
-  var search1, search2
-
+test('.reindex() add', (t) => {
   const data = [
     { name: 'John' },
     { name: 'Paul' },
@@ -18,16 +17,11 @@ describe('reindex add', function () {
     { name: 'Ringo', featured: true }
   ]
 
-  before(function () {
-    search1 = si(data).index('name')
-    search2 = search1.reindex(newData, 3)
-  })
+  const search1 = si(data).index('name')
+  const search2 = search1.reindex(newData, 3)
 
-  it('retains search 1', function () {
-    expect(search1.filterKeys({ featured: true })).toEqual([ '2' ])
-  })
+  t.deepEqual(search1.filterKeys({ featured: true }), [ '2' ], 'retains search 1')
+  t.deepEqual(search2.filterKeys({ featured: true }), [ '2', '3' ], 'retains search 2')
 
-  it('updates search 2', function () {
-    expect(search2.filterKeys({ featured: true })).toEqual([ '2', '3' ])
-  })
+  t.end()
 })

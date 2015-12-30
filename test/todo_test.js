@@ -1,45 +1,48 @@
 'use strict'
 
-describe('todo', function () {
-  it('reindexing (!)', done)
-  it('ast', done)
-
-  describe('scour-ready', function () {
-    it('sane fallbacks', done)
-    it('reindexing by deleting keypath')
-    it('reindexing by similar keypath')
-    // ...if you index `user.name` but `user` was changed
-    it('restricting')
-    it('index multiple')
-    it('indexOf')
-    it('count')
-  })
-
-  describe('operands', function () {
-    it('$eq', done)
-    it('$not', done)
-    it('$in', done)
-    it('$ne', done)
-    it('$nin', done)
-  })
-
-  describe('boolean', function () {
-    it('$and', done)
-    it('$or', done)
-    it('$nor', done)
-  })
-
-  describe('non-indexable operands', function () {
-    it('$exists: true|false', done)
-    it('$lt, $gt, $lte, $gte', done)
-    it('$mod', done)
-    it('$size', done)
-    it('$regex', done)
-    it('$where', done)
-    it('$all')
-    it('$type')
-    it('$elemMatch')
-  })
+test('todo', (t) => {
+  t.ok(1, 'reindexing (!)')
+  t.ok(1, 'ast')
+  t.end()
 })
 
-function done () {}
+test('todo: scour-ready', (t) => {
+  t.ok(1, 'sane fallbacks')
+  t.skip('reindexing by deleting keypath')
+  t.skip('reindexing by similar keypath')
+  // ...if you index `user.name` but `user` was changed
+  t.skip('restricting')
+  t.skip('index multiple')
+  t.skip('indexOf')
+  t.skip('count')
+  t.end()
+})
+
+test('todo: operands', (t) => {
+  t.ok(1, '$eq')
+  t.ok(1, '$not')
+  t.ok(1, '$in')
+  t.ok(1, '$ne')
+  t.ok(1, '$nin')
+  t.end()
+})
+
+test('todo: boolean', (t) => {
+  t.ok(1, '$and')
+  t.ok(1, '$or')
+  t.ok(1, '$nor')
+  t.end()
+})
+
+test('todo: non-indexable operands', (t) => {
+  t.ok(1, '$exists: true|false')
+  t.ok(1, '$lt, $gt, $lte, $gte')
+  t.ok(1, '$mod')
+  t.ok(1, '$size')
+  t.ok(1, '$regex')
+  t.ok(1, '$where')
+  t.skip('$all')
+  t.skip('$type')
+  t.skip('$elemMatch')
+  t.end()
+})
