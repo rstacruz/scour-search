@@ -1,3 +1,8 @@
+## [v0.3.1]
+> Dec 30, 2015
+
+- Fix packaging.
+
 ## [v0.3.0]
 > Dec 30, 2015
 
@@ -18,3 +23,4 @@
 [v0.1.0]: https://github.com/rstacruz/scour-search/tree/v0.1.0
 [v0.2.0]: https://github.com/rstacruz/scour-search/compare/v0.1.0...v0.2.0
 [v0.3.0]: https://github.com/rstacruz/scour-search/compare/v0.2.0...v0.3.0
+[v0.3.1]: https://github.com/rstacruz/scour-search/compare/v0.3.0...v0.3.1
