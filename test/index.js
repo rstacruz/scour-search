@@ -1,4 +1,3 @@
-require('babel-core/register')
 require('./todo_test')
 require('./ast_test')
 require('./fallback_test')

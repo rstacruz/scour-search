@@ -1,10 +1,9 @@
 /* eslint-disable new-cap, no-new */
 'use strict'
-// require('babel-core/register')
 
 const bm = require('./bm')
 
-const si = require('../scour-search.min.js')
+const si = require('../lib')
 const sift = require('sift')
 
 let data = [
