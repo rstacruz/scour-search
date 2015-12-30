@@ -1,3 +1,8 @@
+## [v0.3.2]
+> Dec 30, 2015
+
+- Fix compatibility with ES5 engines.
+
 ## [v0.3.1]
 > Dec 30, 2015
 
@@ -24,3 +29,4 @@
 [v0.2.0]: https://github.com/rstacruz/scour-search/compare/v0.1.0...v0.2.0
 [v0.3.0]: https://github.com/rstacruz/scour-search/compare/v0.2.0...v0.3.0
 [v0.3.1]: https://github.com/rstacruz/scour-search/compare/v0.3.0...v0.3.1
+[v0.3.2]: https://github.com/rstacruz/scour-search/compare/v0.3.1...v0.3.2
