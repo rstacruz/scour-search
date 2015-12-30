@@ -1,5 +1,7 @@
 'use strict'
 
+const test = require('tape')
+
 test('todo', (t) => {
   t.ok(1, 'reindexing (!)')
   t.ok(1, 'ast')
