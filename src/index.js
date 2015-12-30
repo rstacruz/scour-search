@@ -159,6 +159,41 @@ Search.prototype = {
   },
 
   /**
+   * Returns the index. If it's not found, returns `-1`. For arrays, it will
+   * return a numeric index. For objects, it will return the key string of the
+   * match.
+   *
+   *     search = Searcher(data)
+   *     search.indexOf({ id: 3 })
+   */
+
+  indexOf (condition) {
+    var ast = toAST(condition)
+    var keys = this.filterRaw(ast)
+
+    if (!keys) return this.indexOfFallback(ast)
+
+    var key = Object.keys(keys)[0]
+    if (typeof key === 'undefined') return -1
+    return Array.isArray(this.data) ? +key : key
+  },
+
+  indexOfFallback (ast) {
+    var fn = buildFallback(ast)
+    var Break = {}
+    var key
+    try {
+      each(this.data, (item, _key) => {
+        if (fn(item, _key)) { key = _key; throw Break }
+      })
+    } catch (e) {
+      if (e !== Break) throw e
+    }
+    if (typeof key === 'undefined') return -1
+    return Array.isArray(this.data) ? +key : key
+  },
+
+  /**
    * Internal: filters using fallbacks.
    */
 
