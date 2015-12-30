@@ -44,7 +44,7 @@
     "build": "babel src --out-dir lib",
     "watch": "babel -w src --out-dir lib",
     "prepublish": "npm run build",
-    "test": "node test | tap-spec",
+    "test": "babel-node test | tap-spec",
     "test:lint": "standard src/* test/* utilities/*"
   }
 }
