@@ -1,12 +1,24 @@
-function bm (suitename, options) {
-  console.log(suitename)
-  for (var key in options) {
-    if (!options.hasOwnProperty(key)) continue
+var assign = require('object-assign')
+
+var defaults = {
+  onStart: function (suitename) { console.log(suitename) },
+  onStep: function (key) { },
+  onStepEnd: function (key, result) { console.log('    x ' + result.rate + ' op/sec - ' + key) },
+  onError: function (err) { console.error(err.stack) }
+}
+
+function bm (suitename, steps, options) {
+  options = assign({}, defaults, options)
+  if (!options) options = {}
+  options.onStart(suitename, steps, options)
+  for (var key in steps) {
+    if (!steps.hasOwnProperty(key)) continue
     try {
-      var result = bm.runBenchmark(options[key])
-      console.log('    x ' + result.rate + ' op/sec - ' + key)
-    } catch (e) {
-      console.log(e.stack)
+      options.onStep(key)
+      var result = bm.runBenchmark(steps[key])
+      options.onStepEnd(key, result)
+    } catch (err) {
+      options.onError(err)
     }
   }
 }
