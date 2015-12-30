@@ -1,6 +1,4 @@
 const normalizeKeypath = require('../utilities/normalize_keypath')
-const stringify = require('./stringify')
-const each = require('../utilities/each')
 const get = require('../utilities/get')
 
 const fallbacks = {}

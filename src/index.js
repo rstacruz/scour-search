@@ -5,7 +5,6 @@ const cloneWithoutKeys = require('./clone_without_keys')
 const toAST = require('./to_ast')
 const assign = require('object-assign')
 const each = require('../utilities/each')
-const get = require('../utilities/get')
 const stringify = require('./stringify')
 
 const operands = require('./operands')
