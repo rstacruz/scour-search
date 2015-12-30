@@ -18,6 +18,6 @@ module.exports = function normalizeKeypath (keypath, isArguments) {
     return ('' + keypath[0]).split('.')
   } else {
     if (isArguments) keypath = Array.prototype.slice.call(keypath)
-    return keypath.map((k) => '' + k)
+    return keypath.map(function (k) { return '' + k })
   }
 }
