@@ -138,7 +138,7 @@ search = Searcher(data).index('name')
 newData = [ { name: 'john' }, { name: 'ringo' } ]
 search = search.reindex(newData, 1)
 
-// A deletion at key `1`
+// An deletion at key `1`
 newData = [ { name: 'john' } ]
 search = search.reindex(newData, 1)
 ```
@@ -155,6 +155,22 @@ search = Searcher(data)
 search.filter({ name: 'John' })
 search.filter({ name: { $eq: 'John' } })
 search.filter({ name: { $in: ['John', 'George'] } })
+```
+
+### indexOf
+
+> `indexOf(condition)`
+
+Returns the index. If it's not found, returns `-1`. For arrays, it will
+return a numeric index. For objects, it will return the key string of the
+match.
+
+```js
+search = Searcher([ { id: 'AAPL' }, { id: 'GOOG' } ])
+search.indexOf({ id: 'GOOG' })      // => 1
+
+search = Searcher({ aapl: { name: 'Apple' } })
+search.indexOf({ name: 'Apple' })   // => 'aapl'
 ```
 
 ### filterKeys

@@ -163,8 +163,11 @@ Search.prototype = {
    * return a numeric index. For objects, it will return the key string of the
    * match.
    *
-   *     search = Searcher(data)
-   *     search.indexOf({ id: 3 })
+   *     search = Searcher([ { id: 'AAPL' }, { id: 'GOOG' } ])
+   *     search.indexOf({ id: 'GOOG' })      // => 1
+   *
+   *     search = Searcher({ aapl: { name: 'Apple' } })
+   *     search.indexOf({ name: 'Apple' })   // => 'aapl'
    */
 
   indexOf (condition) {
@@ -177,6 +180,10 @@ Search.prototype = {
     if (typeof key === 'undefined') return -1
     return Array.isArray(this.data) ? +key : key
   },
+
+  /**
+   * Internal: a version of indexOf() that uses fallbacks (slow).
+   */
 
   indexOfFallback (ast) {
     var fn = buildFallback(ast)

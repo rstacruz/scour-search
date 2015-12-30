@@ -15,7 +15,7 @@ test('todo: scour-ready', (t) => {
   // ...if you index `user.name` but `user` was changed
   t.skip('restricting')
   t.skip('index multiple')
-  t.skip('indexOf')
+  t.ok(1, 'indexOf')
   t.skip('count')
   t.end()
 })
